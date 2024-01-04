@@ -8,14 +8,14 @@ const (
 
 type ClientConfig struct {
 	accessToken string
-	baseUrl     string
+	BaseUrl     string
 	HTTPClient  *http.Client
 }
 
 func DefaultConfig(accessToken string) ClientConfig {
 	return ClientConfig{
 		accessToken: accessToken,
-		baseUrl:     ouraApiUrlv2,
+		BaseUrl:     ouraApiUrlv2,
 		HTTPClient:  &http.Client{},
 	}
 }
