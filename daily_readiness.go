@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+/*
+https://cloud.ouraring.com/v2/docs#tag/Daily-Readiness-Routes
+*/
+
 type Date struct {
 	time.Time
 }
