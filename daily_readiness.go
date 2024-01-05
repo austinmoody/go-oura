@@ -3,10 +3,7 @@ package go_oura
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
-	"path"
 	"strings"
 	"time"
 )
@@ -56,86 +53,40 @@ type DailyReadinessDocument struct {
 
 func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (DailyReadinessDocuments, error) {
 
-	apiUrl, err := url.Parse(c.config.BaseUrl)
+	apiResponse, err := c.Getter(
+		"usercollection/daily_readiness",
+		url.Values{
+			"start_date": []string{startDate.Format("2006-01-02")},
+			"end_date":   []string{endDate.Format("2006-01-02")},
+		},
+	)
+
 	if err != nil {
 		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to parse base url with error: %w", err)
-	}
-
-	apiUrl.Path = path.Join(apiUrl.Path, "usercollection/daily_readiness")
-
-	params := url.Values{}
-	params.Add("start_date", startDate.Format("2006-01-02"))
-	params.Add("end_date", endDate.Format("2006-01-02"))
-
-	apiUrl.RawQuery = params.Encode()
-
-	req, err := http.NewRequest(http.MethodGet, apiUrl.String(), nil)
-	if err != nil {
-		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to create a new HTTP request with error: %w", err)
-	}
-	req.Header.Set("Authorization", "Bearer "+c.config.accessToken)
-
-	resp, err := c.config.HTTPClient.Do(req)
-	if err != nil {
-		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to complete HTTP request with error: %w", err)
-	}
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to read response body with error: %w", err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to close response body with error: %w", err)
+			fmt.Errorf("failed to get API response with error: %w", err)
 	}
 
 	var readiness DailyReadinessDocuments
-	err = json.Unmarshal(data, &readiness)
+	err = json.Unmarshal(apiResponse.Body, &readiness)
 	if err != nil {
 		return DailyReadinessDocuments{},
 			fmt.Errorf("failed to process response body with error: %w", err)
 	}
 
 	return readiness, nil
-
 }
 
 func (c *Client) GetReadinessDocument(documentId string) (DailyReadinessDocument, error) {
-	apiUrl := fmt.Sprintf("%s/usercollection/daily_readiness/%s", c.config.BaseUrl, documentId)
 
-	req, err := http.NewRequest("GET", apiUrl, nil)
+	apiResponse, err := c.Getter(fmt.Sprintf("/usercollection/daily_readiness/%s", documentId), nil)
+
 	if err != nil {
 		return DailyReadinessDocument{},
-			fmt.Errorf("failed to create a new HTTP request with error: %w", err)
-	}
-	req.Header.Set("Authorization", "Bearer "+c.config.accessToken)
-
-	resp, err := c.config.HTTPClient.Do(req)
-	if err != nil {
-		return DailyReadinessDocument{},
-			fmt.Errorf("failed to complete HTTP request with error: %w", err)
-	}
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return DailyReadinessDocument{},
-			fmt.Errorf("failed to read response body with error: %w", err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		return DailyReadinessDocument{},
-			fmt.Errorf("failed to close response body with error: %w", err)
+			fmt.Errorf("failed to get API response with error: %w", err)
 	}
 
 	var readiness DailyReadinessDocument
-	err = json.Unmarshal(data, &readiness)
+	err = json.Unmarshal(apiResponse.Body, &readiness)
 	if err != nil {
 		return DailyReadinessDocument{},
 			fmt.Errorf("failed to process response body with error: %w", err)
