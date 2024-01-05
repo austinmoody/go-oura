@@ -61,18 +61,22 @@ func (c *Client) Getter(apiUrlPart string, queryParams url.Values) (OuraApiRespo
 			fmt.Errorf("failed to complete HTTP request with error: %w", err)
 	}
 
+	apiResponse := OuraApiResponse{resp.StatusCode, nil}
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return OuraApiResponse{},
+		return apiResponse,
 			fmt.Errorf("failed to read response body with error: %w", err)
 	}
 
 	err = resp.Body.Close()
 	if err != nil {
-		return OuraApiResponse{},
+		return apiResponse,
 			fmt.Errorf("failed to close response body with error: %w", err)
 	}
 
-	return OuraApiResponse{resp.StatusCode, data}, nil
+	apiResponse.Body = data
+
+	return apiResponse, nil
 
 }
