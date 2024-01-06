@@ -56,15 +56,15 @@ type Met struct {
 }
 
 func (c *Client) GetActivity(documentId string) (DailyActivity, error) {
-	apiResponse, err := c.Getter(fmt.Sprintf("/usercollection/daily_activity/%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_activity/%s", documentId), nil)
 
-	if err != nil {
+	if ouraError != nil {
 		return DailyActivity{},
-			fmt.Errorf("failed to get API response with error: %w", err)
+			fmt.Errorf("failed to get API response with error: %w", ouraError)
 	}
 
 	var activity DailyActivity
-	err = json.Unmarshal(apiResponse.Body, &activity)
+	err := json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
 		return DailyActivity{},
 			fmt.Errorf("failed to process response body with error: %w", err)

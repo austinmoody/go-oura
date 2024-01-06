@@ -37,7 +37,7 @@ type DailyReadinessDocument struct {
 
 func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (DailyReadinessDocuments, error) {
 
-	apiResponse, err := c.Getter(
+	apiResponse, ouraError := c.Getter(
 		"usercollection/daily_readiness",
 		url.Values{
 			"start_date": []string{startDate.Format("2006-01-02")},
@@ -45,13 +45,13 @@ func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (
 		},
 	)
 
-	if err != nil {
+	if ouraError != nil {
 		return DailyReadinessDocuments{},
-			fmt.Errorf("failed to get API response with error: %w", err)
+			fmt.Errorf("failed to get API response with error: %w", ouraError)
 	}
 
 	var readiness DailyReadinessDocuments
-	err = json.Unmarshal(apiResponse.Body, &readiness)
+	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
 		return DailyReadinessDocuments{},
 			fmt.Errorf("failed to process response body with error: %w", err)
@@ -62,15 +62,15 @@ func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (
 
 func (c *Client) GetReadinessDocument(documentId string) (DailyReadinessDocument, error) {
 
-	apiResponse, err := c.Getter(fmt.Sprintf("/usercollection/daily_readiness/%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_readiness/%s", documentId), nil)
 
-	if err != nil {
+	if ouraError != nil {
 		return DailyReadinessDocument{},
-			fmt.Errorf("failed to get API response with error: %w", err)
+			fmt.Errorf("failed to get API response with error: %w", ouraError)
 	}
 
 	var readiness DailyReadinessDocument
-	err = json.Unmarshal(apiResponse.Body, &readiness)
+	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
 		return DailyReadinessDocument{},
 			fmt.Errorf("failed to process response body with error: %w", err)
