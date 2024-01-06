@@ -3,7 +3,7 @@ package go_oura
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -120,7 +120,7 @@ func TestClient_Getter(t *testing.T) {
 			queryParams: url.Values{"start_date": {"2006-01-02"}},
 			mockResponse: &http.Response{
 				StatusCode: 200,
-				Body:       ioutil.NopCloser(strings.NewReader(`{"status":"success"}`)),
+				Body:       io.NopCloser(strings.NewReader(`{"status":"success"}`)),
 			},
 			wantErr: false,
 		},
@@ -147,7 +147,7 @@ func TestClient_Getter(t *testing.T) {
 			// Create new client with mock HTTP client
 			client := &Client{
 				config: ClientConfig{
-					BaseUrl:     "http://example.com",
+					BaseUrl:     "https://example.com",
 					HTTPClient:  mockHTTPClient,
 					accessToken: "accessToken",
 				},
@@ -170,7 +170,7 @@ type MockHTTPClient struct {
 	NextErr      error
 }
 
-func (c *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
+func (c *MockHTTPClient) Do(*http.Request) (*http.Response, error) {
 	return c.NextResponse, c.NextErr
 }
 
