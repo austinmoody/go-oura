@@ -8,5 +8,5 @@ type OuraError struct {
 }
 
 func (e *OuraError) Error() string {
-	return fmt.Sprintf("OuraError: {Code: %d, Message: %s}", e.Code, e.Message)
+	return fmt.Sprintf("OuraError %d - %s", e.Code, e.Message)
 }

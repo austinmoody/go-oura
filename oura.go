@@ -66,12 +66,11 @@ func (c *Client) Getter(apiUrlPart string, queryParams url.Values) (*[]byte, *Ou
 	}
 
 	// Check for non-200 HTTP Status Code
-	// TODO cater the message to HTTP Status Code per Oura API Spec
 	if resp.StatusCode != 200 {
 		return nil,
 			&OuraError{
 				Code:    resp.StatusCode,
-				Message: fmt.Sprintf("received non-200 HTTP status code: %d", resp.StatusCode),
+				Message: resp.Status,
 			}
 	}
 
