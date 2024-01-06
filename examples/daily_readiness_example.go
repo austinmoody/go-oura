@@ -34,10 +34,16 @@ func main() {
 			readiness.Documents[0].Id,
 		)
 
-		fmt.Printf(
-			"First Readiness Document Score: %d\n",
-			readiness.Documents[0].Score,
-		)
+		// Could of course print whatever from readiness.Documents[0]
+		// but will pull directly to use single document function
+		singleReadiness, err := client.GetReadinessDocument(readiness.Documents[0].Id)
+		if err != nil {
+			fmt.Printf("Error getting single readiness document: %v", err)
+			return
+		}
+
+		fmt.Printf("Single Readiness Document Score: %d\n", singleReadiness.Score)
+
 	} else {
 		fmt.Printf(
 			"No Readiness Documents were found for the date range: %v - %v",
