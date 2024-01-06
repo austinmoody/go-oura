@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
 	"time"
 )
 
@@ -16,23 +17,60 @@ type DailyReadinessDocuments struct {
 	NextToken *string                  `json:"next_token"`
 }
 
+type Contributors struct {
+	ActivityBalance     int `json:"activity_balance"`
+	BodyTemperature     int `json:"body_temperature"`
+	HrvBalance          int `json:"hrv_balance"`
+	PreviousDayActivity int `json:"previous_day_activity"`
+	PreviousNight       int `json:"previous_night"`
+	RecoveryIndex       int `json:"recovery_index"`
+	RestingHeartRate    int `json:"resting_heart_rate"`
+	SleepBalance        int `json:"sleep_balance"`
+}
+
 type DailyReadinessDocument struct {
-	Id           string `json:"id"`
-	Contributors struct {
-		ActivityBalance     int `json:"activity_balance"`
-		BodyTemperature     int `json:"body_temperature"`
-		HrvBalance          int `json:"hrv_balance"`
-		PreviousDayActivity int `json:"previous_day_activity"`
-		PreviousNight       int `json:"previous_night"`
-		RecoveryIndex       int `json:"recovery_index"`
-		RestingHeartRate    int `json:"resting_heart_rate"`
-		SleepBalance        int `json:"sleep_balance"`
-	} `json:"contributors"`
-	Day                       Date      `json:"day"`
-	Score                     int       `json:"score"`
-	TemperatureDeviation      float64   `json:"temperature_deviation"`
-	TemperatureTrendDeviation float64   `json:"temperature_trend_deviation"`
-	Timestamp                 time.Time `json:"timestamp"`
+	Id                        string       `json:"id"`
+	Contributors              Contributors `json:"contributors"`
+	Day                       Date         `json:"day"`
+	Score                     int          `json:"score"`
+	TemperatureDeviation      float64      `json:"temperature_deviation"`
+	TemperatureTrendDeviation float64      `json:"temperature_trend_deviation"`
+	Timestamp                 time.Time    `json:"timestamp"`
+}
+
+type dailyReadinessDocumentBase DailyReadinessDocument
+
+// UnmarshalJSON unmarshals a JSON byte array into a DailyReadinessDocument
+// instance. It checks if all required fields are present in the JSON and returns
+// an error if any are missing.
+func (dr *DailyReadinessDocument) UnmarshalJSON(data []byte) error {
+	var rawMap map[string]json.RawMessage
+	err := json.Unmarshal(data, &rawMap)
+	if err != nil {
+		return err
+	}
+
+	t := reflect.TypeOf(*dr)
+	requiredFields := make([]string, 0, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		jsonTag := t.Field(i).Tag.Get("json")
+		requiredFields = append(requiredFields, jsonTag)
+	}
+
+	for _, field := range requiredFields {
+		if _, ok := rawMap[field]; !ok {
+			return fmt.Errorf("required field %s not found", field)
+		}
+	}
+
+	var documentBase dailyReadinessDocumentBase
+	err = json.Unmarshal(data, &documentBase)
+	if err != nil {
+		return err
+	}
+
+	*dr = DailyReadinessDocument(documentBase)
+	return nil
 }
 
 func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (DailyReadinessDocuments, error) {
