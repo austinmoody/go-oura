@@ -3,13 +3,14 @@ package go_oura
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"reflect"
 	"time"
 )
 
 type DailyActivities struct {
-	Activities []DailyActivity
-	NextToken  *string
+	Activities []DailyActivity `json:"data"`
+	NextToken  *string         `json:"next_token"`
 }
 
 type DailyActivity struct {
@@ -104,4 +105,27 @@ func (c *Client) GetActivity(documentId string) (DailyActivity, error) {
 	}
 
 	return activity, nil
+}
+
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyActivities, error) {
+
+	apiResponse, ouraError := c.Getter(
+		"usercollection/daily_activity",
+		url.Values{
+			"start_date": []string{startDate.Format("2006-01-02")},
+			"end_date":   []string{endDate.Format("2006-01-02")},
+		},
+	)
+
+	if ouraError != nil {
+		return DailyActivities{}, fmt.Errorf("failed to get API response with error: %w", ouraError)
+	}
+
+	var activities DailyActivities
+	err := json.Unmarshal(*apiResponse, &activities)
+	if err != nil {
+		return DailyActivities{}, fmt.Errorf("failed to process response body with error: %w", err)
+	}
+
+	return activities, nil
 }

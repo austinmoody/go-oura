@@ -4,16 +4,48 @@ import (
 	"fmt"
 	"github.com/austinmoody/go-oura"
 	"os"
+	"time"
 )
 
 func main() {
 	client := go_oura.NewClient(os.Getenv("OURA_ACCESS_TOKEN"))
 
-	activity, err := client.GetActivity("45173cbe-ef26-430f-adc4-c4a1424b45ab")
+	threeDaysAgo := time.Now().Add(-72 * time.Hour)
+	oneDaysAgo := time.Now().Add(-24 * time.Hour)
+
+	activities, err := client.GetActivities(threeDaysAgo, oneDaysAgo)
 	if err != nil {
-		fmt.Printf("Error getting activity: %v", err)
+		fmt.Printf("Error getting activities: %v", err)
 		return
 	}
 
-	fmt.Printf("Activity ID: %s", activity.ID)
+	if len(activities.Activities) > 0 {
+		fmt.Printf(
+			"There were %d Activities found for date range: %v - %v\n",
+			len(activities.Activities),
+			threeDaysAgo.Format("02-Jan-2006"),
+			oneDaysAgo.Format("02-Jan-2006"),
+		)
+
+		fmt.Printf(
+			"First Activity ID: %s\n",
+			activities.Activities[0].ID,
+		)
+
+		singleActivity, err := client.GetActivity(activities.Activities[0].ID)
+		if err != nil {
+			fmt.Printf("Error getting single activity: %v", err)
+			return
+		}
+
+		fmt.Printf("Single Activity Score: %d\n", singleActivity.Score)
+
+	} else {
+		fmt.Printf(
+			"No activities were found for the date range: %v - %v",
+			threeDaysAgo.Format("02-Jan-2006"),
+			oneDaysAgo.Format("02-Jan-2006"),
+		)
+	}
+
 }
