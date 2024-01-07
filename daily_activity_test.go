@@ -81,7 +81,11 @@ func TestGetActivity(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				rw.Write([]byte(tc.mockResponse))
+				_, err := rw.Write([]byte(tc.mockResponse))
+				if err != nil {
+					http.Error(rw, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}))
 
 			config := ClientConfig{
