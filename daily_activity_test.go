@@ -1,6 +1,7 @@
 package go_oura
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -95,6 +96,12 @@ func TestGetActivity(t *testing.T) {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
 				}
+
+				var ouraErr *OuraError
+				if !errors.As(err, &ouraErr) {
+					t.Errorf("expected an OuraError but got a different error: %v", err)
+				}
+
 				return
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)

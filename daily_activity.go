@@ -89,25 +89,28 @@ func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetActivity(documentId string) (DailyActivity, error) {
+func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
 	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_activity/%s", documentId), nil)
 
 	if ouraError != nil {
 		return DailyActivity{},
-			fmt.Errorf("failed to get API response with error: %w", ouraError)
+			ouraError
 	}
 
 	var activity DailyActivity
 	err := json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
 		return DailyActivity{},
-			fmt.Errorf("failed to process response body with error: %w", err)
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
 	}
 
 	return activity, nil
 }
 
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyActivities, error) {
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyActivities, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(
 		"usercollection/daily_activity",
@@ -118,13 +121,17 @@ func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyAct
 	)
 
 	if ouraError != nil {
-		return DailyActivities{}, fmt.Errorf("failed to get API response with error: %w", ouraError)
+		return DailyActivities{}, ouraError
 	}
 
 	var activities DailyActivities
 	err := json.Unmarshal(*apiResponse, &activities)
 	if err != nil {
-		return DailyActivities{}, fmt.Errorf("failed to process response body with error: %w", err)
+		return DailyActivities{},
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
 	}
 
 	return activities, nil
