@@ -1,6 +1,7 @@
 package go_oura
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -80,7 +81,11 @@ func TestGetActivity(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				rw.Write([]byte(tc.mockResponse))
+				_, err := rw.Write([]byte(tc.mockResponse))
+				if err != nil {
+					http.Error(rw, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}))
 
 			config := ClientConfig{
@@ -95,6 +100,12 @@ func TestGetActivity(t *testing.T) {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
 				}
+
+				var ouraErr *OuraError
+				if !errors.As(err, &ouraErr) {
+					t.Errorf("expected an OuraError but got a different error: %v", err)
+				}
+
 				return
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)
