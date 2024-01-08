@@ -1,6 +1,10 @@
 package go_oura
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+	"net/url"
+)
 
 const (
 	ouraApiUrlv2 = "https://api.ouraring.com/v2"
@@ -13,14 +17,47 @@ type HTTPClient interface {
 
 type ClientConfig struct {
 	accessToken string
-	BaseUrl     string
+	baseUrl     string
 	HTTPClient  HTTPClient
 }
 
-func DefaultConfig(accessToken string) ClientConfig {
+func GetConfig(accessToken string) ClientConfig {
 	return ClientConfig{
 		accessToken: accessToken,
-		BaseUrl:     ouraApiUrlv2,
+		baseUrl:     ouraApiUrlv2,
 		HTTPClient:  &http.Client{},
 	}
+}
+
+func GetConfigWithUrl(accessToken string, baseUrl string) ClientConfig {
+	return ClientConfig{
+		accessToken: accessToken,
+		baseUrl:     baseUrl,
+		HTTPClient:  &http.Client{},
+	}
+}
+
+func GetConfigWithUrlAndHttp(accessToken string, baseUrl string, client HTTPClient) ClientConfig {
+	return ClientConfig{
+		accessToken: accessToken,
+		baseUrl:     baseUrl,
+		HTTPClient:  client,
+	}
+}
+
+func (c *ClientConfig) GetUrl() (*url.URL, *OuraError) {
+	apiUrl, err := url.ParseRequestURI(c.baseUrl)
+	if err != nil {
+		return nil,
+			&OuraError{
+				Code:    -1,
+				Message: fmt.Sprintf("failed to parse base url with error: %v", err),
+			}
+	}
+
+	return apiUrl, nil
+}
+
+func (c *ClientConfig) AddAuthorizationHeader(request *http.Request) {
+	request.Header.Set("Authorization", "Bearer "+c.accessToken)
 }

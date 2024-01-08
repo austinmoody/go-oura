@@ -88,12 +88,7 @@ func TestGetActivity(t *testing.T) {
 				}
 			}))
 
-			config := ClientConfig{
-				BaseUrl:    server.URL,
-				HTTPClient: server.Client(),
-			}
-
-			client := Client{config: config}
+			client := NewClientWithUrlAndHttp("", server.URL, server.Client())
 
 			activity, err := client.GetActivity(tc.documentId)
 			if tc.expectErr {

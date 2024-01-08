@@ -64,12 +64,7 @@ func TestGetReadinessDocument(t *testing.T) {
 				rw.Write([]byte(tc.mockResponse))
 			}))
 
-			config := ClientConfig{
-				BaseUrl:    server.URL,
-				HTTPClient: server.Client(),
-			}
-
-			client := Client{config: config}
+			client := NewClientWithUrlAndHttp("", server.URL, server.Client())
 
 			activity, err := client.GetReadinessDocument(tc.documentId)
 			if tc.expectErr {
