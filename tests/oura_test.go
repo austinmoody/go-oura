@@ -172,7 +172,7 @@ func TestClient_Getter(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 
-			clientConfig := go_oura.GetConfigWithUrlAndHttp("accessToken", "", mockHTTPClient)
+			clientConfig := go_oura.GetConfigWithUrlAndHttp("accessToken", "http://www.example.com", mockHTTPClient)
 
 			// Create new client with mock HTTP client
 			client := &go_oura.Client{Config: clientConfig}
