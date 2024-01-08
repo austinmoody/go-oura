@@ -9,24 +9,33 @@ import (
 )
 
 type Client struct {
-	config ClientConfig
+	Config ClientConfig
 }
 
 func NewClient(accessToken string) *Client {
-
 	return &Client{
-		config: DefaultConfig(accessToken),
+		Config: GetConfig(accessToken),
+	}
+}
+
+func NewClientWithUrl(accessToken string, baseUrl string) *Client {
+	return &Client{
+		Config: GetConfigWithUrl(accessToken, baseUrl),
+	}
+}
+
+func NewClientWithUrlAndHttp(accessToken string, baseUrl string, client HTTPClient) *Client {
+	return &Client{
+		Config: GetConfigWithUrlAndHttp(accessToken, baseUrl, client),
 	}
 }
 
 func (c *Client) NewRequest(apiUrlPart string, params url.Values) (*http.Request, *OuraError) {
-	apiUrl, err := url.Parse(c.config.BaseUrl)
-	if err != nil {
+
+	apiUrl, ouraError := c.Config.GetUrl()
+	if ouraError != nil {
 		return nil,
-			&OuraError{
-				Code:    -1,
-				Message: fmt.Sprintf("failed to parse base url with error: %v", err),
-			}
+			ouraError
 	}
 
 	apiUrl.Path = path.Join(apiUrl.Path, apiUrlPart)
@@ -43,7 +52,7 @@ func (c *Client) NewRequest(apiUrlPart string, params url.Values) (*http.Request
 				Message: fmt.Sprintf("failed to create a new HTTP GET request with error: %v", err),
 			}
 	}
-	req.Header.Set("Authorization", "Bearer "+c.config.accessToken)
+	c.Config.AddAuthorizationHeader(req)
 
 	return req, nil
 }
@@ -56,7 +65,7 @@ func (c *Client) Getter(apiUrlPart string, queryParams url.Values) (*[]byte, *Ou
 			ouraError
 	}
 
-	resp, err := c.config.HTTPClient.Do(req)
+	resp, err := c.Config.HTTPClient.Do(req)
 	if err != nil {
 		return nil,
 			&OuraError{

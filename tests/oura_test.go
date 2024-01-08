@@ -1,8 +1,9 @@
-package go_oura
+package tests
 
 import (
 	"errors"
 	"fmt"
+	"github.com/austinmoody/go-oura"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,34 +14,63 @@ import (
 /*
 Trying to convince myself these tests are useful... :)
 */
-func TestNewClient(t *testing.T) {
+func TestNewClientWithUrl(t *testing.T) {
 	tt := []struct {
-		name        string
-		accessToken string
-		expected    string
+		name      string
+		baseUrl   string
+		expected  string
+		expectErr bool
 	}{
 		{
-			name:        "EmptyAccessToken",
-			accessToken: "",
-			expected:    "",
+			name:      "ValidBaseUrl",
+			baseUrl:   "http://www.example.com/",
+			expected:  "http://www.example.com/",
+			expectErr: false,
 		},
 		{
-			name:        "ValidAccessToken",
-			accessToken: "valid_token",
-			expected:    "valid_token",
+			name:      "InvalidUrl",
+			baseUrl:   "This Is Not A Url",
+			expected:  "",
+			expectErr: true,
 		},
 		{
-			name:        "AccessTokenWithSpecialChars",
-			accessToken: "token#with$pecial@charact^rs",
-			expected:    "token#with$pecial@charact^rs",
+			name:      "BlankUrl",
+			baseUrl:   "",
+			expected:  "",
+			expectErr: true,
+		},
+		{
+			name:      "ActualOuraUrl",
+			baseUrl:   "https://api.ouraring.com/v2/usercollection/daily_activity/45173cbe-ef26-430f-adc4-c4a1424b45ab",
+			expected:  "https://api.ouraring.com/v2/usercollection/daily_activity/45173cbe-ef26-430f-adc4-c4a1424b45ab",
+			expectErr: false,
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			client := NewClient(tc.accessToken)
-			if client.config.accessToken != tc.expected {
-				t.Errorf("NewClient(%q).accessToken = %q; expected %q", tc.accessToken, client.config.accessToken, tc.expected)
+			client := go_oura.NewClientWithUrl("", tc.baseUrl)
+
+			apiUrl, err := client.Config.GetUrl()
+
+			if tc.expectErr {
+				if err == nil {
+					t.Errorf("Expected error, got nil")
+				}
+
+				var ouraErr *go_oura.OuraError
+				if !errors.As(err, &ouraErr) {
+					t.Errorf("expected an OuraError but got a different error: %v", err)
+				}
+
+				return
+			} else if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+
+			if apiUrl.String() != tc.expected {
+				t.Errorf("NewClientWithUrl created with BaseUrl %q, expected %q got %q", tc.baseUrl, tc.baseUrl, apiUrl.String())
 			}
 		})
 	}
@@ -73,14 +103,11 @@ func TestClient_NewRequest(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+
+			clientConfig := go_oura.GetConfigWithUrl("test-token", tc.baseUrl)
+
 			// Create a new Client.
-			client := &Client{
-				config: ClientConfig{
-					BaseUrl:     tc.baseUrl,
-					accessToken: "test-token",
-					HTTPClient:  &http.Client{},
-				},
-			}
+			client := &go_oura.Client{Config: clientConfig}
 
 			_, err := client.NewRequest(tc.apiUrlPart, tc.params)
 
@@ -94,7 +121,7 @@ func TestClient_NewRequest(t *testing.T) {
 
 			// If there is an error, it must be OuraError.
 			if err != nil {
-				var ouraErr *OuraError
+				var ouraErr *go_oura.OuraError
 				if !errors.As(err, &ouraErr) {
 					t.Errorf("expected an OuraError but got a different error: %v", err)
 				}
@@ -144,14 +171,11 @@ func TestClient_Getter(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+
+			clientConfig := go_oura.GetConfigWithUrlAndHttp("accessToken", "http://www.example.com", mockHTTPClient)
+
 			// Create new client with mock HTTP client
-			client := &Client{
-				config: ClientConfig{
-					BaseUrl:     "https://example.com",
-					HTTPClient:  mockHTTPClient,
-					accessToken: "accessToken",
-				},
-			}
+			client := &go_oura.Client{Config: clientConfig}
 
 			mockHTTPClient.NextResponse = tc.mockResponse
 			mockHTTPClient.NextErr = tc.mockErr

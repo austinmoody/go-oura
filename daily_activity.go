@@ -58,6 +58,37 @@ type Met struct {
 }
 
 type dailyActivityBase DailyActivity
+type dailyActivitiesBase DailyActivities
+
+func (da *DailyActivities) UnmarshalJSON(data []byte) error {
+	var rawMap map[string]json.RawMessage
+	err := json.Unmarshal(data, &rawMap)
+	if err != nil {
+		return err
+	}
+
+	t := reflect.TypeOf(*da)
+	requiredFields := make([]string, 0, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		jsonTag := t.Field(i).Tag.Get("json")
+		requiredFields = append(requiredFields, jsonTag)
+	}
+
+	for _, field := range requiredFields {
+		if _, ok := rawMap[field]; !ok {
+			return fmt.Errorf("required field %s not found", field)
+		}
+	}
+
+	var aBase dailyActivitiesBase
+	err = json.Unmarshal(data, &aBase)
+	if err != nil {
+		return err
+	}
+
+	*da = DailyActivities(aBase)
+	return nil
+}
 
 func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage

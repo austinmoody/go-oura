@@ -39,10 +39,41 @@ type DailyReadinessDocument struct {
 }
 
 type dailyReadinessDocumentBase DailyReadinessDocument
+type dailyReadinessDocumentsBase DailyReadinessDocuments
 
-// UnmarshalJSON unmarshals a JSON byte array into a DailyReadinessDocument
-// instance. It checks if all required fields are present in the JSON and returns
+// Custom UnmarshalJSON for DailyReadinessDocument and DailyReadinessDocuments
+// Checks if all required fields are present in the JSON and returns
 // an error if any are missing.
+func (dr *DailyReadinessDocuments) UnmarshalJSON(data []byte) error {
+	var rawMap map[string]json.RawMessage
+	err := json.Unmarshal(data, &rawMap)
+	if err != nil {
+		return err
+	}
+
+	t := reflect.TypeOf(*dr)
+	requiredFields := make([]string, 0, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		jsonTag := t.Field(i).Tag.Get("json")
+		requiredFields = append(requiredFields, jsonTag)
+	}
+
+	for _, field := range requiredFields {
+		if _, ok := rawMap[field]; !ok {
+			return fmt.Errorf("required field %s not found", field)
+		}
+	}
+
+	var documentBase dailyReadinessDocumentsBase
+	err = json.Unmarshal(data, &documentBase)
+	if err != nil {
+		return err
+	}
+
+	*dr = DailyReadinessDocuments(documentBase)
+	return nil
+}
+
 func (dr *DailyReadinessDocument) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)

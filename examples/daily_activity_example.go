@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/austinmoody/go-oura"
+	"os"
 	"time"
 )
 
 func main() {
-	client := go_oura.NewClient("")
+	client := go_oura.NewClient(os.Getenv("OURA_ACCESS_TOKEN"))
 
 	threeDaysAgo := time.Now().Add(-72 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
