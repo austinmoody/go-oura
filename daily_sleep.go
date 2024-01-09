@@ -96,7 +96,7 @@ func (sd *SleepDocuments) UnmarshalJSON(data []byte) error {
 
 func (c *Client) GetSleepDocuments(startDate time.Time, endDate time.Time) (SleepDocuments, *OuraError) {
 	apiResponse, ouraError := c.Getter(
-		"usercollection/daily_sleep",
+		SleepUrl,
 		url.Values{
 			"start_date": []string{startDate.Format("2006-01-02")},
 			"end_date":   []string{endDate.Format("2006-01-02")},
@@ -122,7 +122,8 @@ func (c *Client) GetSleepDocuments(startDate time.Time, endDate time.Time) (Slee
 }
 
 func (c *Client) GetSleepDocument(documentId string) (SleepDocument, *OuraError) {
-	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_sleep/%s", documentId), nil)
+
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(SleepUrl+"/%s", documentId), nil)
 
 	if ouraError != nil {
 		return SleepDocument{},
