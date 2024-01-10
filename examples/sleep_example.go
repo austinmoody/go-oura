@@ -13,37 +13,37 @@ func main() {
 	threeDaysAgo := time.Now().Add(-72 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	sleepDocs, err := client.GetSleepDocuments(threeDaysAgo, oneDaysAgo)
+	sleepDocs, err := client.GetSleeps(threeDaysAgo, oneDaysAgo)
 	if err != nil {
-		fmt.Printf("Error getting Sleep Documents: %v", err)
+		fmt.Printf("Error getting Sleep Items: %v", err)
 		return
 	}
 
-	if len(sleepDocs.Documents) > 0 {
+	if len(sleepDocs.Items) > 0 {
 		fmt.Printf(
-			"There were %d Sleep Documents found for date range: %v - %v\n",
-			len(sleepDocs.Documents),
+			"There were %d Sleep Items found for date range: %v - %v\n",
+			len(sleepDocs.Items),
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
-			"First SleepDocuments ID: %s\n",
-			sleepDocs.Documents[0].ID,
+			"First Sleeps ID: %s\n",
+			sleepDocs.Items[0].ID,
 		)
 
-		singleSleepDoc, err := client.GetSleepDocument(sleepDocs.Documents[0].ID)
+		singleSleepDoc, err := client.GetSleep(sleepDocs.Items[0].ID)
 		if err != nil {
-			fmt.Printf("Error getting single sleep document: %v", err)
+			fmt.Printf("Error getting single sleep item: %v", err)
 			return
 		}
 
-		// Match the field 'Score' in SleepDocument struct or replace it with the correct field
-		fmt.Printf("Single Sleep Document Score: %d\n", singleSleepDoc.Score)
+		// Match the field 'Score' in Sleep struct or replace it with the correct field
+		fmt.Printf("Single Sleep Score: %d\n", singleSleepDoc.Score)
 
 	} else {
 		fmt.Printf(
-			"No Sleep Documents were found for the date range: %v - %v",
+			"No Sleep Items were found for the date range: %v - %v",
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)

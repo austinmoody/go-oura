@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-type SleepDocuments struct {
-	Documents []SleepDocument `json:"data"`
-	NextToken string          `json:"next_token"`
+type Sleeps struct {
+	Items     []Sleep `json:"data"`
+	NextToken string  `json:"next_token"`
 }
 
-type SleepDocument struct {
+type Sleep struct {
 	ID           string            `json:"id"`
 	Contributors SleepContributors `json:"contributors"`
 	Day          Date              `json:"day"`
@@ -31,10 +31,10 @@ type SleepContributors struct {
 	TotalSleep  int64 `json:"total_sleep"`
 }
 
-type dailySleepDocumentBase SleepDocument
-type dailySleepDocumentsBase SleepDocuments
+type dailySleepDocumentBase Sleep
+type dailySleepDocumentsBase Sleeps
 
-func (sd *SleepDocument) UnmarshalJSON(data []byte) error {
+func (sd *Sleep) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -60,11 +60,11 @@ func (sd *SleepDocument) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*sd = SleepDocument(documentBase)
+	*sd = Sleep(documentBase)
 	return nil
 }
 
-func (sd *SleepDocuments) UnmarshalJSON(data []byte) error {
+func (sd *Sleeps) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -90,11 +90,11 @@ func (sd *SleepDocuments) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*sd = SleepDocuments(documentBase)
+	*sd = Sleeps(documentBase)
 	return nil
 }
 
-func (c *Client) GetSleepDocuments(startDate time.Time, endDate time.Time) (SleepDocuments, *OuraError) {
+func (c *Client) GetSleeps(startDate time.Time, endDate time.Time) (Sleeps, *OuraError) {
 	apiResponse, ouraError := c.Getter(
 		SleepUrl,
 		url.Values{
@@ -104,14 +104,14 @@ func (c *Client) GetSleepDocuments(startDate time.Time, endDate time.Time) (Slee
 	)
 
 	if ouraError != nil {
-		return SleepDocuments{},
+		return Sleeps{},
 			ouraError
 	}
 
-	var documents SleepDocuments
+	var documents Sleeps
 	err := json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return SleepDocuments{},
+		return Sleeps{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
@@ -121,19 +121,19 @@ func (c *Client) GetSleepDocuments(startDate time.Time, endDate time.Time) (Slee
 	return documents, nil
 }
 
-func (c *Client) GetSleepDocument(documentId string) (SleepDocument, *OuraError) {
+func (c *Client) GetSleep(documentId string) (Sleep, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(fmt.Sprintf(SleepUrl+"/%s", documentId), nil)
 
 	if ouraError != nil {
-		return SleepDocument{},
+		return Sleep{},
 			ouraError
 	}
 
-	var sleep SleepDocument
+	var sleep Sleep
 	err := json.Unmarshal(*apiResponse, &sleep)
 	if err != nil {
-		return SleepDocument{},
+		return Sleep{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
