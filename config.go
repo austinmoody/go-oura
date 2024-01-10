@@ -10,6 +10,12 @@ const (
 	ouraApiUrlv2 = "https://api.ouraring.com/v2"
 )
 
+const (
+	ActivityUrl  = "/usercollection/daily_activity"
+	ReadinessUrl = "/usercollection/daily_readiness"
+	SleepUrl     = "/usercollection/daily_sleep"
+)
+
 // Literally here so I can mock in tests
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
