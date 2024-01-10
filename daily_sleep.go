@@ -16,9 +16,9 @@ type SleepDocuments struct {
 type SleepDocument struct {
 	ID           string            `json:"id"`
 	Contributors SleepContributors `json:"contributors"`
-	Day          string            `json:"day"`
+	Day          Date              `json:"day"`
 	Score        int64             `json:"score"`
-	Timestamp    string            `json:"timestamp"`
+	Timestamp    time.Time         `json:"timestamp"`
 }
 
 type SleepContributors struct {
