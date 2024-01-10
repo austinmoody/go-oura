@@ -9,8 +9,8 @@ import (
 )
 
 type Activities struct {
-	Activities []Activity `json:"data"`
-	NextToken  *string    `json:"next_token"`
+	Items     []Activity `json:"data"`
+	NextToken *string    `json:"next_token"`
 }
 
 type Activity struct {
@@ -121,7 +121,7 @@ func (da *Activity) UnmarshalJSON(data []byte) error {
 }
 
 func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
-	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_activity/%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(ActivityUrl+"/%s", documentId), nil)
 
 	if ouraError != nil {
 		return Activity{},
@@ -144,7 +144,7 @@ func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
 func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (Activities, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(
-		"usercollection/daily_activity",
+		ActivityUrl,
 		url.Values{
 			"start_date": []string{startDate.Format("2006-01-02")},
 			"end_date":   []string{endDate.Format("2006-01-02")},

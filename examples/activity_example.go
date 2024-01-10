@@ -19,20 +19,20 @@ func main() {
 		return
 	}
 
-	if len(activities.Activities) > 0 {
+	if len(activities.Items) > 0 {
 		fmt.Printf(
 			"There were %d Activities found for date range: %v - %v\n",
-			len(activities.Activities),
+			len(activities.Items),
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
 			"First Activity ID: %s\n",
-			activities.Activities[0].ID,
+			activities.Items[0].ID,
 		)
 
-		singleActivity, err := client.GetActivity(activities.Activities[0].ID)
+		singleActivity, err := client.GetActivity(activities.Items[0].ID)
 		if err != nil {
 			fmt.Printf("Error getting single activity: %v", err)
 			return
