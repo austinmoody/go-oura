@@ -9,22 +9,22 @@ import (
 	"time"
 )
 
-func TestGetReadinessDocuments(t *testing.T) {
+func TestGetReadinesses(t *testing.T) {
 	tt := []struct {
 		name           string
 		startTime      time.Time
 		endTime        time.Time
 		mockResponse   string
-		expectedOutput go_oura.DailyReadinessDocuments
+		expectedOutput go_oura.Readinesses
 		expectErr      bool
 	}{
 		{
-			name:         "ValidResponse",
+			name:         "Valid_Readinesses_Response",
 			startTime:    time.Now().Add(-1 * time.Hour),
 			endTime:      time.Now().Add(-2 * time.Hour),
 			mockResponse: `{"data":[{"id":"29a809a2-778c-4742-b945-e01876b8f32a","contributors":{"activity_balance":86,"body_temperature":89,"hrv_balance":4,"previous_day_activity":88,"previous_night":87,"recovery_index":99,"resting_heart_rate":1,"sleep_balance":90},"day":"2024-01-01","score":63,"temperature_deviation":0.2,"temperature_trend_deviation":0.38,"timestamp":"2024-01-01T00:00:00+00:00"}],"next_token":null}`,
-			expectedOutput: go_oura.DailyReadinessDocuments{
-				Documents: []go_oura.DailyReadinessDocument{
+			expectedOutput: go_oura.Readinesses{
+				Items: []go_oura.Readiness{
 					{
 						Id: "29a809a2-778c-4742-b945-e01876b8f32a",
 						Day: func() go_oura.Date {
@@ -56,11 +56,11 @@ func TestGetReadinessDocuments(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name:           "InvalidResponse",
+			name:           "Invalid_Readinesses_Response",
 			startTime:      time.Now().Add(-3 * time.Hour),
 			endTime:        time.Now().Add(-4 * time.Hour),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.DailyReadinessDocuments{},
+			expectedOutput: go_oura.Readinesses{},
 			expectErr:      true,
 		},
 	}
@@ -77,7 +77,7 @@ func TestGetReadinessDocuments(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetReadinessDocuments(tc.startTime, tc.endTime)
+			activity, err := client.GetReadinesses(tc.startTime, tc.endTime)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
@@ -96,19 +96,19 @@ func TestGetReadinessDocuments(t *testing.T) {
 
 }
 
-func TestGetReadinessDocument(t *testing.T) {
+func TestGetReadiness(t *testing.T) {
 	tt := []struct {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.DailyReadinessDocument
+		expectedOutput go_oura.Readiness
 		expectErr      bool
 	}{
 		{
-			name:         "ValidResponse",
+			name:         "Valid_Readiness_Response",
 			documentId:   "1",
 			mockResponse: `{"id":"29a809a2-778c-4742-b945-e01876b8f32a","contributors":{"activity_balance":86,"body_temperature":89,"hrv_balance":4,"previous_day_activity":88,"previous_night":87,"recovery_index":99,"resting_heart_rate":1,"sleep_balance":90},"day":"2024-01-01","score":63,"temperature_deviation":0.2,"temperature_trend_deviation":0.38,"timestamp":"2024-01-01T00:00:00+00:00"}`,
-			expectedOutput: go_oura.DailyReadinessDocument{
+			expectedOutput: go_oura.Readiness{
 				Id: "29a809a2-778c-4742-b945-e01876b8f32a",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
@@ -138,10 +138,10 @@ func TestGetReadinessDocument(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name:           "Invalid Response",
+			name:           "Invalid_Readiness_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.DailyReadinessDocument{},
+			expectedOutput: go_oura.Readiness{},
 			expectErr:      true,
 		},
 	}
@@ -158,7 +158,7 @@ func TestGetReadinessDocument(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetReadinessDocument(tc.documentId)
+			activity, err := client.GetReadiness(tc.documentId)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")

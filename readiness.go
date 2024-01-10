@@ -12,9 +12,9 @@ import (
 https://cloud.ouraring.com/v2/docs#tag/Daily-Readiness-Routes
 */
 
-type DailyReadinessDocuments struct {
-	Documents []DailyReadinessDocument `json:"data"`
-	NextToken *string                  `json:"next_token"`
+type Readinesses struct {
+	Items     []Readiness `json:"data"`
+	NextToken *string     `json:"next_token"`
 }
 
 type Contributors struct {
@@ -28,7 +28,7 @@ type Contributors struct {
 	SleepBalance        int `json:"sleep_balance"`
 }
 
-type DailyReadinessDocument struct {
+type Readiness struct {
 	Id                        string       `json:"id"`
 	Contributors              Contributors `json:"contributors"`
 	Day                       Date         `json:"day"`
@@ -38,13 +38,13 @@ type DailyReadinessDocument struct {
 	Timestamp                 time.Time    `json:"timestamp"`
 }
 
-type dailyReadinessDocumentBase DailyReadinessDocument
-type dailyReadinessDocumentsBase DailyReadinessDocuments
+type dailyReadinessDocumentBase Readiness
+type dailyReadinessDocumentsBase Readinesses
 
-// Custom UnmarshalJSON for DailyReadinessDocument and DailyReadinessDocuments
+// Custom UnmarshalJSON for Readiness and Readinesses
 // Checks if all required fields are present in the JSON and returns
 // an error if any are missing.
-func (dr *DailyReadinessDocuments) UnmarshalJSON(data []byte) error {
+func (dr *Readinesses) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -70,11 +70,11 @@ func (dr *DailyReadinessDocuments) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*dr = DailyReadinessDocuments(documentBase)
+	*dr = Readinesses(documentBase)
 	return nil
 }
 
-func (dr *DailyReadinessDocument) UnmarshalJSON(data []byte) error {
+func (dr *Readiness) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -100,14 +100,14 @@ func (dr *DailyReadinessDocument) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*dr = DailyReadinessDocument(documentBase)
+	*dr = Readiness(documentBase)
 	return nil
 }
 
-func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (DailyReadinessDocuments, error) {
+func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time) (Readinesses, error) {
 
 	apiResponse, ouraError := c.Getter(
-		"usercollection/daily_readiness",
+		ReadinessUrl,
 		url.Values{
 			"start_date": []string{startDate.Format("2006-01-02")},
 			"end_date":   []string{endDate.Format("2006-01-02")},
@@ -115,33 +115,33 @@ func (c *Client) GetReadinessDocuments(startDate time.Time, endDate time.Time) (
 	)
 
 	if ouraError != nil {
-		return DailyReadinessDocuments{},
+		return Readinesses{},
 			fmt.Errorf("failed to get API response with error: %w", ouraError)
 	}
 
-	var readiness DailyReadinessDocuments
+	var readiness Readinesses
 	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
-		return DailyReadinessDocuments{},
+		return Readinesses{},
 			fmt.Errorf("failed to process response body with error: %w", err)
 	}
 
 	return readiness, nil
 }
 
-func (c *Client) GetReadinessDocument(documentId string) (DailyReadinessDocument, error) {
+func (c *Client) GetReadiness(documentId string) (Readiness, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_readiness/%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(ReadinessUrl+"%s", documentId), nil)
 
 	if ouraError != nil {
-		return DailyReadinessDocument{},
+		return Readiness{},
 			fmt.Errorf("failed to get API response with error: %w", ouraError)
 	}
 
-	var readiness DailyReadinessDocument
+	var readiness Readiness
 	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
-		return DailyReadinessDocument{},
+		return Readiness{},
 			fmt.Errorf("failed to process response body with error: %w", err)
 	}
 
