@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-type DailyActivities struct {
-	Activities []DailyActivity `json:"data"`
-	NextToken  *string         `json:"next_token"`
+type Activities struct {
+	Activities []Activity `json:"data"`
+	NextToken  *string    `json:"next_token"`
 }
 
-type DailyActivity struct {
+type Activity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`
 	Score                     int         `json:"score"`
@@ -57,10 +57,10 @@ type Met struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-type dailyActivityBase DailyActivity
-type dailyActivitiesBase DailyActivities
+type dailyActivityBase Activity
+type dailyActivitiesBase Activities
 
-func (da *DailyActivities) UnmarshalJSON(data []byte) error {
+func (da *Activities) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -86,11 +86,11 @@ func (da *DailyActivities) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = DailyActivities(aBase)
+	*da = Activities(aBase)
 	return nil
 }
 
-func (da *DailyActivity) UnmarshalJSON(data []byte) error {
+func (da *Activity) UnmarshalJSON(data []byte) error {
 	var rawMap map[string]json.RawMessage
 	err := json.Unmarshal(data, &rawMap)
 	if err != nil {
@@ -116,22 +116,22 @@ func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = DailyActivity(aBase)
+	*da = Activity(aBase)
 	return nil
 }
 
-func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
+func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
 	apiResponse, ouraError := c.Getter(fmt.Sprintf("/usercollection/daily_activity/%s", documentId), nil)
 
 	if ouraError != nil {
-		return DailyActivity{},
+		return Activity{},
 			ouraError
 	}
 
-	var activity DailyActivity
+	var activity Activity
 	err := json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
-		return DailyActivity{},
+		return Activity{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
@@ -141,7 +141,7 @@ func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
 	return activity, nil
 }
 
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyActivities, *OuraError) {
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (Activities, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(
 		"usercollection/daily_activity",
@@ -152,13 +152,13 @@ func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (DailyAct
 	)
 
 	if ouraError != nil {
-		return DailyActivities{}, ouraError
+		return Activities{}, ouraError
 	}
 
-	var activities DailyActivities
+	var activities Activities
 	err := json.Unmarshal(*apiResponse, &activities)
 	if err != nil {
-		return DailyActivities{},
+		return Activities{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
