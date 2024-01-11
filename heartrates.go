@@ -43,7 +43,10 @@ func (hr *HeartRate) UnmarshalJSON(data []byte) error {
 	}
 
 	var hrBase hearRateBase
-	json.Unmarshal(data, &hrBase)
+	err = json.Unmarshal(data, &hrBase)
+	if err != nil {
+		return err
+	}
 	*hr = HeartRate(hrBase)
 
 	return nil
@@ -70,7 +73,11 @@ func (hr *HeartRates) UnmarshalJSON(data []byte) error {
 	}
 
 	var hrBase heartRatesBase
-	json.Unmarshal(data, &hrBase)
+	err = json.Unmarshal(data, &hrBase)
+	if err != nil {
+		return err
+	}
+
 	*hr = HeartRates(hrBase)
 
 	return nil
