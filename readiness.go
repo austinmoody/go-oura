@@ -104,7 +104,7 @@ func (dr *Readiness) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time) (Readinesses, error) {
+func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time) (Readinesses, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(
 		ReadinessUrl,
@@ -116,33 +116,39 @@ func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time) (Readine
 
 	if ouraError != nil {
 		return Readinesses{},
-			fmt.Errorf("failed to get API response with error: %w", ouraError)
+			ouraError
 	}
 
 	var readiness Readinesses
 	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
 		return Readinesses{},
-			fmt.Errorf("failed to process response body with error: %w", err)
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
 	}
 
 	return readiness, nil
 }
 
-func (c *Client) GetReadiness(documentId string) (Readiness, error) {
+func (c *Client) GetReadiness(documentId string) (Readiness, *OuraError) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(ReadinessUrl+"%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(ReadinessUrl+"/%s", documentId), nil)
 
 	if ouraError != nil {
 		return Readiness{},
-			fmt.Errorf("failed to get API response with error: %w", ouraError)
+			ouraError
 	}
 
 	var readiness Readiness
 	err := json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
 		return Readiness{},
-			fmt.Errorf("failed to process response body with error: %w", err)
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
 	}
 
 	return readiness, nil

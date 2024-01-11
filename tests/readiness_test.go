@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"errors"
 	"github.com/austinmoody/go-oura"
 	"net/http"
 	"net/http/httptest"
@@ -82,6 +83,12 @@ func TestGetReadinesses(t *testing.T) {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
 				}
+
+				var ouraErr *go_oura.OuraError
+				if !errors.As(err, &ouraErr) {
+					t.Errorf("expected an OuraError but got a different error: %v", err)
+				}
+
 				return
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)
@@ -163,6 +170,12 @@ func TestGetReadiness(t *testing.T) {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
 				}
+
+				var ouraErr *go_oura.OuraError
+				if !errors.As(err, &ouraErr) {
+					t.Errorf("expected an OuraError but got a different error: %v", err)
+				}
+
 				return
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)
