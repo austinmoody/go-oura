@@ -16,6 +16,7 @@ const (
 	SleepUrl     = "/usercollection/daily_sleep"
 	HeartRateUrl = "/usercollection/heartrate"
 	Spo2Url      = "/usercollection/daily_spo2"
+	StressUrl    = "/usercollection/daily_stress"
 )
 
 // Literally here so I can mock in tests
