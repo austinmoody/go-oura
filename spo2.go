@@ -15,7 +15,7 @@ type Spo2Readings struct {
 
 type Spo2Reading struct {
 	ID         string         `json:"id"`
-	Day        string         `json:"day"`
+	Day        Date           `json:"day"`
 	Percentage Spo2Percentage `json:"spo2_percentage"`
 }
 
