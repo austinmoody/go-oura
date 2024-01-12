@@ -143,7 +143,7 @@ func TestGetSpo2Readings(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetSpo2Readings(tc.startDate, tc.endDate)
+			activity, err := client.GetSpo2Readings(tc.startDate, tc.endDate, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")

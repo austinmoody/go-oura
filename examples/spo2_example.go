@@ -13,7 +13,7 @@ func main() {
 	twoDaysAgo := time.Now().Add(-48 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	spo2s, err := client.GetSpo2Readings(twoDaysAgo, oneDaysAgo)
+	spo2s, err := client.GetSpo2Readings(twoDaysAgo, oneDaysAgo, nil)
 	if err != nil {
 		fmt.Printf("Error getting Spo2 readings: %v", err)
 		return

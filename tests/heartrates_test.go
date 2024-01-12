@@ -23,7 +23,7 @@ func TestGetHeartRates(t *testing.T) {
 			name:          "Valid_HeartRates_Response",
 			startDateTime: time.Now().Add(-1 * time.Hour),
 			endDateTime:   time.Now().Add(-2 * time.Hour),
-			mockResponse:  `{"data":[{"bpm":74,"source":"awake","timestamp":"2024-01-10T01:45:45+00:00"},{"bpm":95,"source":"awake","timestamp":"2024-01-10T01:46:00+00:00"}],"next_token":null}`,
+			mockResponse:  `{"data":[{"bpm":74,"source":"awake","timestamp":"2024-01-10T01:45:45+00:00"},{"bpm":95,"source":"awake","timestamp":"2024-01-10T01:46:00+00:00"}],"next_token":"1:eyJ1Ijp7IjkwMTJhYjcwLTY4YWMtNGRkYi04ZGI2LTk5MTA3Mjk2NTMwYSI6eyJuZXdfc3RhcnRfdGltZSI6IjIwMjQtMDEtMDZUMjI6NDQ6NTEuODAxWiJ9fSwibiI6W119"}`,
 			expectedOutput: go_oura.HeartRates{
 				Items: []go_oura.HeartRate{
 					{
@@ -44,6 +44,7 @@ func TestGetHeartRates(t *testing.T) {
 						}(),
 					},
 				},
+				NextToken: "1:eyJ1Ijp7IjkwMTJhYjcwLTY4YWMtNGRkYi04ZGI2LTk5MTA3Mjk2NTMwYSI6eyJuZXdfc3RhcnRfdGltZSI6IjIwMjQtMDEtMDZUMjI6NDQ6NTEuODAxWiJ9fSwibiI6W119",
 			},
 			expectErr: false,
 		},
@@ -69,7 +70,7 @@ func TestGetHeartRates(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetHeartRates(tc.startDateTime, tc.endDateTime)
+			activity, err := client.GetHeartRates(tc.startDateTime, tc.endDateTime, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")

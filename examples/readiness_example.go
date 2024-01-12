@@ -15,7 +15,7 @@ func main() {
 	twoDaysAgo := time.Now().Add(-48 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	readiness, err := client.GetReadinesses(twoDaysAgo, oneDaysAgo)
+	readiness, err := client.GetReadinesses(twoDaysAgo, oneDaysAgo, nil)
 	if err != nil {
 		fmt.Printf("Error getting multiple readinesses: %v", err)
 		return

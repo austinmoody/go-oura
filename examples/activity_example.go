@@ -13,7 +13,7 @@ func main() {
 	threeDaysAgo := time.Now().Add(-72 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	activities, err := client.GetActivities(threeDaysAgo, oneDaysAgo)
+	activities, err := client.GetActivities(threeDaysAgo, oneDaysAgo, nil)
 	if err != nil {
 		fmt.Printf("Error getting activities: %v", err)
 		return

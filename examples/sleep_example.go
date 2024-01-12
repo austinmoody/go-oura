@@ -13,7 +13,7 @@ func main() {
 	threeDaysAgo := time.Now().Add(-72 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	sleepDocs, err := client.GetSleeps(threeDaysAgo, oneDaysAgo)
+	sleepDocs, err := client.GetSleeps(threeDaysAgo, oneDaysAgo, nil)
 	if err != nil {
 		fmt.Printf("Error getting Sleep Items: %v", err)
 		return
