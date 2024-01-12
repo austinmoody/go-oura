@@ -104,14 +104,20 @@ func (dr *Readiness) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time) (Readinesses, *OuraError) {
+func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time, nextToken *string) (Readinesses, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_date": []string{startDate.Format("2006-01-02")},
+		"end_date":   []string{endDate.Format("2006-01-02")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
 
 	apiResponse, ouraError := c.Getter(
 		ReadinessUrl,
-		url.Values{
-			"start_date": []string{startDate.Format("2006-01-02")},
-			"end_date":   []string{endDate.Format("2006-01-02")},
-		},
+		urlParameters,
 	)
 
 	if ouraError != nil {

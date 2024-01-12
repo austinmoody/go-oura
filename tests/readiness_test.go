@@ -78,7 +78,7 @@ func TestGetReadinesses(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetReadinesses(tc.startTime, tc.endTime)
+			activity, err := client.GetReadinesses(tc.startTime, tc.endTime, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")

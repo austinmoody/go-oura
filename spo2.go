@@ -87,14 +87,20 @@ func (s *Spo2Readings) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time) (Spo2Readings, *OuraError) {
+func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time, nextToken *string) (Spo2Readings, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_date": []string{startDate.Format("2006-01-02")},
+		"end_date":   []string{endDate.Format("2006-01-02")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
 
 	apiResponse, ouraError := c.Getter(
 		Spo2Url,
-		url.Values{
-			"start_date": []string{startDate.Format("2006-01-02")},
-			"end_date":   []string{endDate.Format("2006-01-02")},
-		},
+		urlParameters,
 	)
 
 	if ouraError != nil {

@@ -141,14 +141,20 @@ func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
 	return activity, nil
 }
 
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time) (Activities, *OuraError) {
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (Activities, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_date": []string{startDate.Format("2006-01-02")},
+		"end_date":   []string{endDate.Format("2006-01-02")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
 
 	apiResponse, ouraError := c.Getter(
 		ActivityUrl,
-		url.Values{
-			"start_date": []string{startDate.Format("2006-01-02")},
-			"end_date":   []string{endDate.Format("2006-01-02")},
-		},
+		urlParameters,
 	)
 
 	if ouraError != nil {

@@ -94,13 +94,20 @@ func (sd *Sleeps) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetSleeps(startDate time.Time, endDate time.Time) (Sleeps, *OuraError) {
+func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (Sleeps, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_date": []string{startDate.Format("2006-01-02")},
+		"end_date":   []string{endDate.Format("2006-01-02")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
+
 	apiResponse, ouraError := c.Getter(
 		SleepUrl,
-		url.Values{
-			"start_date": []string{startDate.Format("2006-01-02")},
-			"end_date":   []string{endDate.Format("2006-01-02")},
-		},
+		urlParameters,
 	)
 
 	if ouraError != nil {
