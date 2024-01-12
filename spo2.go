@@ -113,3 +113,26 @@ func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time) (Spo2Re
 
 	return readings, nil
 }
+
+func (c *Client) GetSpo2Reading(id string) (Spo2Reading, *OuraError) {
+	apiResponse, ouraError := c.Getter(
+		fmt.Sprintf("%s/%s", Spo2Url, id),
+		nil,
+	)
+
+	if ouraError != nil {
+		return Spo2Reading{}, ouraError
+	}
+
+	var reading Spo2Reading
+	err := json.Unmarshal(*apiResponse, &reading)
+	if err != nil {
+		return Spo2Reading{},
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
+	}
+
+	return reading, nil
+}
