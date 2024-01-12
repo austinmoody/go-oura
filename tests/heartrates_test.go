@@ -69,7 +69,7 @@ func TestGetHeartRates(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetHeartRates(tc.startDateTime, tc.endDateTime)
+			activity, err := client.GetHeartRates(tc.startDateTime, tc.endDateTime, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")

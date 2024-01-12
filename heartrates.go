@@ -83,13 +83,20 @@ func (hr *HeartRates) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetHeartRates(startDateTime time.Time, endDateTime time.Time) (HeartRates, *OuraError) {
+func (c *Client) GetHeartRates(startDateTime time.Time, endDateTime time.Time, nextToken *string) (HeartRates, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_datetime": []string{startDateTime.Format("2006-01-02T15:04:05-07:00")},
+		"end_datetime":   []string{endDateTime.Format("2006-01-02T15:04:05-07:00")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
+
 	apiResponse, ouraError := c.Getter(
 		HeartRateUrl,
-		url.Values{
-			"start_datetime": []string{startDateTime.Format("2006-01-02T15:04:05-07:00")},
-			"end_datetime":   []string{endDateTime.Format("2006-01-02T15:04:05-07:00")},
-		},
+		urlParameters,
 	)
 
 	if ouraError != nil {
