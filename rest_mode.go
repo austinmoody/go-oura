@@ -3,6 +3,7 @@ package go_oura
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"reflect"
 	"time"
 )
@@ -109,4 +110,38 @@ func (c *Client) GetRestMode(documentId string) (RestMode, *OuraError) {
 	}
 
 	return restMode, nil
+}
+
+func (c *Client) GetRestModes(startDate time.Time, endDate time.Time, nextToken *string) (RestModes, *OuraError) {
+
+	urlParameters := url.Values{
+		"start_date": []string{startDate.Format("2006-01-02")},
+		"end_date":   []string{endDate.Format("2006-01-02")},
+	}
+
+	if nextToken != nil {
+		urlParameters.Set("next_token", *nextToken)
+	}
+
+	apiResponse, ouraError := c.Getter(
+		RestModeUrl,
+		urlParameters,
+	)
+
+	if ouraError != nil {
+		return RestModes{},
+			ouraError
+	}
+
+	var restModes RestModes
+	err := json.Unmarshal(*apiResponse, &restModes)
+	if err != nil {
+		return RestModes{},
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
+	}
+
+	return restModes, nil
 }
