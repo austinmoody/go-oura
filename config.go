@@ -19,6 +19,7 @@ const (
 	StressUrl       = "/usercollection/daily_stress"
 	TagUrl          = "/usercollection/enhanced_tag"
 	PersonalInfoUrl = "/usercollection/personal_info"
+	RestModeUrl     = "/usercollection/rest_mode_period"
 )
 
 // Literally here so I can mock in tests
