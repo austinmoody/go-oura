@@ -14,13 +14,13 @@ type Tags struct {
 }
 
 type Tag struct {
-	ID          string    `json:"id"`
-	TagTypeCode string    `json:"tag_type_code"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
-	StartDay    string    `json:"start_day"`
-	EndDay      string    `json:"end_day"`
-	Comment     string    `json:"comment"`
+	ID          string     `json:"id"`
+	TagTypeCode string     `json:"tag_type_code"`
+	StartTime   *time.Time `json:"start_time"`
+	EndTime     *time.Time `json:"end_time"`
+	StartDay    *Date      `json:"start_day"`
+	EndDay      *Date      `json:"end_day"`
+	Comment     string     `json:"comment"`
 }
 
 type tagDocumentBase Tag
