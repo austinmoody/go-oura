@@ -11,13 +11,14 @@ const (
 )
 
 const (
-	ActivityUrl  = "/usercollection/daily_activity"
-	ReadinessUrl = "/usercollection/daily_readiness"
-	SleepUrl     = "/usercollection/daily_sleep"
-	HeartRateUrl = "/usercollection/heartrate"
-	Spo2Url      = "/usercollection/daily_spo2"
-	StressUrl    = "/usercollection/daily_stress"
-	TagUrl       = "/usercollection/enhanced_tag"
+	ActivityUrl     = "/usercollection/daily_activity"
+	ReadinessUrl    = "/usercollection/daily_readiness"
+	SleepUrl        = "/usercollection/daily_sleep"
+	HeartRateUrl    = "/usercollection/heartrate"
+	Spo2Url         = "/usercollection/daily_spo2"
+	StressUrl       = "/usercollection/daily_stress"
+	TagUrl          = "/usercollection/enhanced_tag"
+	PersonalInfoUrl = "/usercollection/personal_info"
 )
 
 // Literally here so I can mock in tests
