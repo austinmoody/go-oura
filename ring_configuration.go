@@ -14,13 +14,13 @@ type RingConfigurations struct {
 }
 
 type RingConfiguration struct {
-	ID              string    `json:"id"`
-	Color           string    `json:"color"`
-	Design          string    `json:"design"`
-	FirmwareVersion string    `json:"firmware_version"`
-	HardwareType    string    `json:"hardware_type"`
-	SetUpAt         time.Time `json:"set_up_at"`
-	Size            int       `json:"size"`
+	ID              string     `json:"id"`
+	Color           string     `json:"color"`
+	Design          string     `json:"design"`
+	FirmwareVersion string     `json:"firmware_version"`
+	HardwareType    string     `json:"hardware_type"`
+	SetUpAt         *time.Time `json:"set_up_at"`
+	Size            int        `json:"size"`
 }
 
 type ringConfigurationBase RingConfiguration
@@ -118,4 +118,30 @@ func (c *Client) GetRingConfigurations(startDate time.Time, endDate time.Time, n
 	}
 
 	return ringConfigurations, nil
+}
+
+func (c *Client) GetRingConfiguration(documentId string) (RingConfiguration, *OuraError) {
+
+	apiResponse, ouraError := c.Getter(
+		fmt.Sprintf(RingConfigurationUrl+"/%s", documentId),
+		nil,
+	)
+
+	if ouraError != nil {
+		return RingConfiguration{},
+			ouraError
+	}
+
+	var ringConfiguration RingConfiguration
+	err := json.Unmarshal(*apiResponse, &ringConfiguration)
+	if err != nil {
+		return RingConfiguration{},
+			&OuraError{
+				Code:    0,
+				Message: fmt.Sprintf("failed to process response body with error: %v", err),
+			}
+	}
+
+	return ringConfiguration, nil
+
 }
