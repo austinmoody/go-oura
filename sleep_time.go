@@ -15,7 +15,7 @@ type SleepTimes struct {
 
 type SleepTime struct {
 	ID             string          `json:"id"`
-	Day            string          `json:"day"`
+	Day            Date            `json:"day"`
 	OptimalBedtime *OptimalBedtime `json:"optimal_bedtime"`
 	Recommendation string          `json:"recommendation"`
 	Status         string          `json:"status"`
