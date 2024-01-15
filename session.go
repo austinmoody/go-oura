@@ -35,27 +35,12 @@ type sessionBase Session
 type sessionsBase Sessions
 
 func (s *Session) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*s), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*s)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var session sessionBase
-	err = json.Unmarshal(data, &session)
+	err := json.Unmarshal(data, &session)
 	if err != nil {
 		return err
 	}
@@ -65,27 +50,12 @@ func (s *Session) UnmarshalJSON(data []byte) error {
 }
 
 func (s *Sessions) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*s), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*s)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var sessions sessionsBase
-	err = json.Unmarshal(data, &sessions)
+	err := json.Unmarshal(data, &sessions)
 	if err != nil {
 		return err
 	}

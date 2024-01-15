@@ -35,27 +35,12 @@ type dailySleepDocumentBase Sleep
 type dailySleepDocumentsBase Sleeps
 
 func (sd *Sleep) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*sd), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*sd)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var documentBase dailySleepDocumentBase
-	err = json.Unmarshal(data, &documentBase)
+	err := json.Unmarshal(data, &documentBase)
 	if err != nil {
 		return err
 	}
@@ -65,27 +50,12 @@ func (sd *Sleep) UnmarshalJSON(data []byte) error {
 }
 
 func (sd *Sleeps) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*sd), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*sd)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var documentBase dailySleepDocumentsBase
-	err = json.Unmarshal(data, &documentBase)
+	err := json.Unmarshal(data, &documentBase)
 	if err != nil {
 		return err
 	}

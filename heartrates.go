@@ -23,27 +23,12 @@ type heartRatesBase HeartRates
 type hearRateBase HeartRate
 
 func (hr *HeartRate) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*hr), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*hr)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var hrBase hearRateBase
-	err = json.Unmarshal(data, &hrBase)
+	err := json.Unmarshal(data, &hrBase)
 	if err != nil {
 		return err
 	}
@@ -53,27 +38,12 @@ func (hr *HeartRate) UnmarshalJSON(data []byte) error {
 }
 
 func (hr *HeartRates) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*hr), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*hr)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var hrBase heartRatesBase
-	err = json.Unmarshal(data, &hrBase)
+	err := json.Unmarshal(data, &hrBase)
 	if err != nil {
 		return err
 	}
