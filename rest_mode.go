@@ -31,27 +31,12 @@ type restModeBase RestMode
 type restModesBase RestModes
 
 func (rm *RestMode) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*rm), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*rm)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var restMode restModeBase
-	err = json.Unmarshal(data, &restMode)
+	err := json.Unmarshal(data, &restMode)
 	if err != nil {
 		return err
 	}
@@ -61,27 +46,12 @@ func (rm *RestMode) UnmarshalJSON(data []byte) error {
 }
 
 func (rm *RestModes) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*rm), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*rm)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var restModes restModesBase
-	err = json.Unmarshal(data, &restModes)
+	err := json.Unmarshal(data, &restModes)
 	if err != nil {
 		return err
 	}

@@ -30,57 +30,29 @@ type workoutBase Workout
 type workoutsBase Workouts
 
 func (w *Workout) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+
+	if err := checkJSONFields(reflect.TypeOf(*w), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*w)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var workout workoutBase
-	err = json.Unmarshal(data, &workout)
+	err := json.Unmarshal(data, &workout)
 	if err != nil {
 		return err
 	}
 
 	*w = Workout(workout)
+
 	return nil
 }
 
 func (w *Workouts) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*w), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*w)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var workouts workoutsBase
-	err = json.Unmarshal(data, &workouts)
+	err := json.Unmarshal(data, &workouts)
 	if err != nil {
 		return err
 	}

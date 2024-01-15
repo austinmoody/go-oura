@@ -18,27 +18,12 @@ type PersonalInfo struct {
 type personalInfoBase PersonalInfo
 
 func (pi *PersonalInfo) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*pi), data); err != nil {
 		return err
 	}
 
-	t := reflect.TypeOf(*pi)
-	requiredFields := make([]string, 0, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		jsonTag := t.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var personalInfo personalInfoBase
-	err = json.Unmarshal(data, &personalInfo)
+	err := json.Unmarshal(data, &personalInfo)
 	if err != nil {
 		return err
 	}

@@ -27,27 +27,12 @@ type tagDocumentBase Tag
 type tagDocumentsBase Tags
 
 func (t *Tag) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*t), data); err != nil {
 		return err
 	}
 
-	tt := reflect.TypeOf(*t)
-	requiredFields := make([]string, 0, tt.NumField())
-	for i := 0; i < tt.NumField(); i++ {
-		jsonTag := tt.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var documentBase tagDocumentBase
-	err = json.Unmarshal(data, &documentBase)
+	err := json.Unmarshal(data, &documentBase)
 	if err != nil {
 		return err
 	}
@@ -57,27 +42,12 @@ func (t *Tag) UnmarshalJSON(data []byte) error {
 }
 
 func (t *Tags) UnmarshalJSON(data []byte) error {
-	var rawMap map[string]json.RawMessage
-	err := json.Unmarshal(data, &rawMap)
-	if err != nil {
+	if err := checkJSONFields(reflect.TypeOf(*t), data); err != nil {
 		return err
 	}
 
-	tt := reflect.TypeOf(*t)
-	requiredFields := make([]string, 0, tt.NumField())
-	for i := 0; i < tt.NumField(); i++ {
-		jsonTag := tt.Field(i).Tag.Get("json")
-		requiredFields = append(requiredFields, jsonTag)
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := rawMap[field]; !ok {
-			return fmt.Errorf("required field %s not found", field)
-		}
-	}
-
 	var documentBase tagDocumentsBase
-	err = json.Unmarshal(data, &documentBase)
+	err := json.Unmarshal(data, &documentBase)
 	if err != nil {
 		return err
 	}
