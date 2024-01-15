@@ -22,6 +22,7 @@ const (
 	RestModeUrl          = "/usercollection/rest_mode_period"
 	RingConfigurationUrl = "/usercollection/ring_configuration"
 	SessionUrl           = "/usercollection/session"
+	WorkoutUrl           = "/usercollection/workout"
 )
 
 // Literally here so I can mock in tests
