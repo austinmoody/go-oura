@@ -3,7 +3,7 @@ package tests
 import (
 	"errors"
 	"fmt"
-	"github.com/austinmoody/go-oura"
+	"github.com/austinmoody/go_oura"
 	"io"
 	"net/http"
 	"net/url"
