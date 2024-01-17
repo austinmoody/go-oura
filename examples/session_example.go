@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/austinmoody/go-oura"
+	"github.com/austinmoody/go_oura"
 	"os"
 	"time"
 )

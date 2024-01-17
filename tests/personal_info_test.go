@@ -2,7 +2,7 @@ package tests
 
 import (
 	"errors"
-	go_oura "github.com/austinmoody/go-oura"
+	go_oura "github.com/austinmoody/go_oura"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
