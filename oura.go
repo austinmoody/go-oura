@@ -12,12 +12,60 @@ type Client struct {
 	Config ClientConfig
 }
 
+/*
+NewClient
+
+Function Name:
+
+	NewClient(accessToken string) *Client
+
+Description:
+
+	The 'NewClient' function is used to create a new go_oura client with given access token.
+
+	The Client will use the Base URL specified in config.go.
+
+Parameters:
+ 1. accessToken: A string representing your Oura Ring personal access token required to authenticate the client.
+
+Returns:
+
+	A pointer to a new 'Client' structure instance.
+
+Example usage:
+
+	client := NewClient("your_access_token_here")
+*/
 func NewClient(accessToken string) *Client {
 	return &Client{
 		Config: GetConfig(accessToken),
 	}
 }
 
+/*
+NewClientWithUrl
+
+Function Name:
+
+	NewClientWithUrl(accessToken string, baseUrl string) *Client
+
+Description:
+
+	The 'NewClientWithUrl' function is used to create a new go_oura client with given access token and base url.
+
+Parameters:
+
+ 1. accessToken: A string representing your Oura Ring personal access token required to authenticate the client.
+ 2. baseUrl: The base API url for the Oura Ring API.  The default, for example, is https://api.ouraring.com/v2
+
+Returns:
+
+	A pointer to a new 'Client' structure instance.
+
+Example usage:
+
+	client := NewClientWithUrl("your_access_token_here", "https://api.ouraring.com/v2")
+*/
 func NewClientWithUrl(accessToken string, baseUrl string) *Client {
 	return &Client{
 		Config: GetConfigWithUrl(accessToken, baseUrl),

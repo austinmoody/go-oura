@@ -24,7 +24,7 @@ Uses the v2 of the [Oura Ring API](https://cloud.ouraring.com/v2/docs).
 
 ## What's Missing
 
-- OAuth2 Authentication &rarr; So far go_oura requires a personal token to authenticate against the Oura Ring API. OAuth2 protocol may be added in the future. However as of now this is geared towards personal usage, and not for creating an Oura registered application.
+- OAuth2 Authentication &rarr; So far go_oura requires a personal token to authenticate against the Oura Ring API. OAuth2 protocol may be added in the future. However, as of now this is geared towards personal usage, and not for creating an Oura registered application.
 - [Webhooks](https://cloud.ouraring.com/v2/docs#tag/Webhook-Subscription-Routes) &rarr; Would be used mainly for an Oura registered application. At this time has not been implemented.
 
 ## Install
@@ -33,10 +33,30 @@ Uses the v2 of the [Oura Ring API](https://cloud.ouraring.com/v2/docs).
 go get github.com/austinmoody/go_oura
 ```
 
+## Examples
+
+The [examples](examples) directory contains an example for each implemented type.  Each example makes a couple calls to the Oura Ring API and displays data.
+
+To run the examples you'll need to have an environment variable called ```OURA_ACCESS_TOKEN``` setup to contain your personal access token.
+
 ## Usage
 
-TODO
+The first thing to do is to get a Client.  
 
-## Work In Progress Notes
+```go
+client := go_oura.NewClient("your-access-token")
+```
 
-- Examples assume that you have an environment variable OURA_ACCESS_TOKEN set which holds your _Personal Access Token_.  You can setup/get yours here: https://cloud.ouraring.com/personal-access-tokens
+Next we can pull data for different types of data offered up by Oura Ring.
+
+Activities for the last 24 hours:
+
+```go
+activities, err := client.GetActivities(time.Now().Add(-24 * time.Hour), time.Now(), nil)
+if err != nil {
+    fmt.Printf("Error getting activities: %v", err)
+    return
+}
+```
+
+Unless there is an error you'll have an [Activities](activity.go) type.
