@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// DailyActivities stores a list of daily DailyActivity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
+// DailyActivities stores a list of daily activity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
 // https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
 type DailyActivities struct {
 	Items     []DailyActivity `json:"data"`

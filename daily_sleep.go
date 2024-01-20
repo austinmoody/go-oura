@@ -1,3 +1,4 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
 package go_oura
 
 import (
@@ -8,12 +9,15 @@ import (
 	"time"
 )
 
-type Sleeps struct {
-	Items     []Sleep `json:"data"`
-	NextToken string  `json:"next_token"`
+// DailySleeps stores a list of daily sleep items along with a token which may be used to pull the next batch of DailySleep items from the API.
+// https://cloud.ouraring.com/v2/docs#tag/Daily-Sleep-Routes
+type DailySleeps struct {
+	Items     []DailySleep `json:"data"`
+	NextToken string       `json:"next_token"`
 }
 
-type Sleep struct {
+// DailySleep describes a single sleep session
+type DailySleep struct {
 	ID           string            `json:"id"`
 	Contributors SleepContributors `json:"contributors"`
 	Day          Date              `json:"day"`
@@ -21,6 +25,7 @@ type Sleep struct {
 	Timestamp    time.Time         `json:"timestamp"`
 }
 
+// SleepContributors describes data points which contribute to the DailySleep score
 type SleepContributors struct {
 	DeepSleep   int64 `json:"deep_sleep"`
 	Efficiency  int64 `json:"efficiency"`
@@ -31,10 +36,11 @@ type SleepContributors struct {
 	TotalSleep  int64 `json:"total_sleep"`
 }
 
-type dailySleepDocumentBase Sleep
-type dailySleepDocumentsBase Sleeps
+type dailySleepDocumentBase DailySleep
+type dailySleepDocumentsBase DailySleeps
 
-func (sd *Sleep) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert a daily sleep JSON from the API to the DailySleep type.
+func (sd *DailySleep) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*sd), data); err != nil {
 		return err
 	}
@@ -45,11 +51,12 @@ func (sd *Sleep) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*sd = Sleep(documentBase)
+	*sd = DailySleep(documentBase)
 	return nil
 }
 
-func (sd *Sleeps) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert multiple daily sleep JSON from the API to the DailySleeps type.
+func (sd *DailySleeps) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*sd), data); err != nil {
 		return err
 	}
@@ -60,11 +67,14 @@ func (sd *Sleeps) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*sd = Sleeps(documentBase)
+	*sd = DailySleeps(documentBase)
 	return nil
 }
 
-func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (Sleeps, *OuraError) {
+// GetSleeps accepts a start & end date and returns a DailySleeps object which will contain any DailySleep
+// found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
+// activities if the date range returns a large set.
+func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (DailySleeps, *OuraError) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -81,14 +91,14 @@ func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *st
 	)
 
 	if ouraError != nil {
-		return Sleeps{},
+		return DailySleeps{},
 			ouraError
 	}
 
-	var documents Sleeps
+	var documents DailySleeps
 	err := json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return Sleeps{},
+		return DailySleeps{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
@@ -98,19 +108,20 @@ func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *st
 	return documents, nil
 }
 
-func (c *Client) GetSleep(documentId string) (Sleep, *OuraError) {
+// GetSleep accepts a single daily sleep ID and returns a DailySleep object.
+func (c *Client) GetSleep(dailySleepId string) (DailySleep, *OuraError) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(SleepUrl+"/%s", documentId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(SleepUrl+"/%s", dailySleepId), nil)
 
 	if ouraError != nil {
-		return Sleep{},
+		return DailySleep{},
 			ouraError
 	}
 
-	var sleep Sleep
+	var sleep DailySleep
 	err := json.Unmarshal(*apiResponse, &sleep)
 	if err != nil {
-		return Sleep{},
+		return DailySleep{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),

@@ -15,14 +15,14 @@ func TestGetSleepDocument(t *testing.T) {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.Sleep
+		expectedOutput go_oura.DailySleep
 		expectErr      bool
 	}{
 		{
 			name:         "Valid_SleepDocument_Response",
 			documentId:   "1",
 			mockResponse: `{"id":"4eaa0e18-3464-49cc-961a-2ffd5f8ea98e","contributors":{"deep_sleep":63,"efficiency":93,"latency":64,"rem_sleep":95,"restfulness":72,"timing":94,"total_sleep":90},"day":"2024-01-07","score":83,"timestamp":"2024-01-07T00:00:00+00:00"}`,
-			expectedOutput: go_oura.Sleep{
+			expectedOutput: go_oura.DailySleep{
 				ID: "4eaa0e18-3464-49cc-961a-2ffd5f8ea98e",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
@@ -51,7 +51,7 @@ func TestGetSleepDocument(t *testing.T) {
 			name:           "Invalid_SleepDocument_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Sleep{},
+			expectedOutput: go_oura.DailySleep{},
 			expectErr:      true,
 		},
 	}
@@ -98,7 +98,7 @@ func TestGetSleepDocuments(t *testing.T) {
 		startTime      time.Time
 		endTime        time.Time
 		mockResponse   string
-		expectedOutput go_oura.Sleeps
+		expectedOutput go_oura.DailySleeps
 		expectErr      bool
 	}{
 		{
@@ -106,8 +106,8 @@ func TestGetSleepDocuments(t *testing.T) {
 			startTime:    time.Now().Add(-1 * time.Hour),
 			endTime:      time.Now().Add(-2 * time.Hour),
 			mockResponse: `{"data":[{"id":"4eaa0e18-3464-49cc-961a-2ffd5f8ea98e","contributors":{"deep_sleep":63,"efficiency":93,"latency":64,"rem_sleep":95,"restfulness":72,"timing":94,"total_sleep":90},"day":"2024-01-07","score":83,"timestamp":"2024-01-07T00:00:00+00:00"}],"next_token":null}`,
-			expectedOutput: go_oura.Sleeps{
-				Items: []go_oura.Sleep{
+			expectedOutput: go_oura.DailySleeps{
+				Items: []go_oura.DailySleep{
 					{
 						ID: "4eaa0e18-3464-49cc-961a-2ffd5f8ea98e",
 						Day: func() go_oura.Date {
@@ -139,7 +139,7 @@ func TestGetSleepDocuments(t *testing.T) {
 			startTime:      time.Now(),
 			endTime:        time.Now(),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Sleeps{},
+			expectedOutput: go_oura.DailySleeps{},
 			expectErr:      true,
 		},
 	}
