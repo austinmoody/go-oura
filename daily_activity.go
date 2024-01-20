@@ -9,15 +9,15 @@ import (
 	"time"
 )
 
-// Activities stores a list of daily Activity items along with a token which may be used to pull the next batch of Activity items from the API.
+// DailyActivities stores a list of daily DailyActivity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
 // https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
-type Activities struct {
-	Items     []Activity `json:"data"`
-	NextToken *string    `json:"next_token"`
+type DailyActivities struct {
+	Items     []DailyActivity `json:"data"`
+	NextToken *string         `json:"next_token"`
 }
 
-// Activity describes daily activity summary values and detailed activity levels.
-type Activity struct {
+// DailyActivity describes daily activity summary values and detailed activity levels.
+type DailyActivity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`
 	Score                     int         `json:"score"`
@@ -46,7 +46,7 @@ type Activity struct {
 	Timestamp                 time.Time   `json:"timestamp"`
 }
 
-// Contributor describes data points which contribute to the summary Activity score
+// Contributor describes data points which contribute to the summary DailyActivity score
 type Contributor struct {
 	MeetDailyTargets  int `json:"meet_daily_targets"`
 	MoveEveryHour     int `json:"move_every_hour"`
@@ -63,11 +63,11 @@ type Met struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-type dailyActivityBase Activity
-type dailyActivitiesBase Activities
+type dailyActivityBase DailyActivity
+type dailyActivitiesBase DailyActivities
 
-// UnmarshalJSON is a helper function to convert Daily Activities JSON from the API to the Activities type.
-func (da *Activities) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert Daily DailyActivities JSON from the API to the DailyActivities type.
+func (da *DailyActivities) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
 	}
@@ -78,12 +78,12 @@ func (da *Activities) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = Activities(aBase)
+	*da = DailyActivities(aBase)
 	return nil
 }
 
-// UnmarshalJSON is a helper function to convert an Activity JSON from the API to the Activity type.
-func (da *Activity) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert an DailyActivity JSON from the API to the DailyActivity type.
+func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
 	}
@@ -94,22 +94,22 @@ func (da *Activity) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = Activity(aBase)
+	*da = DailyActivity(aBase)
 	return nil
 }
 
-func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
+func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
 	apiResponse, ouraError := c.Getter(fmt.Sprintf(ActivityUrl+"/%s", documentId), nil)
 
 	if ouraError != nil {
-		return Activity{},
+		return DailyActivity{},
 			ouraError
 	}
 
-	var activity Activity
+	var activity DailyActivity
 	err := json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
-		return Activity{},
+		return DailyActivity{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
@@ -119,7 +119,7 @@ func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
 	return activity, nil
 }
 
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (Activities, *OuraError) {
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (DailyActivities, *OuraError) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -136,13 +136,13 @@ func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken
 	)
 
 	if ouraError != nil {
-		return Activities{}, ouraError
+		return DailyActivities{}, ouraError
 	}
 
-	var activities Activities
+	var activities DailyActivities
 	err := json.Unmarshal(*apiResponse, &activities)
 	if err != nil {
-		return Activities{},
+		return DailyActivities{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),

@@ -21,14 +21,14 @@ func main() {
 
 	if len(activities.Items) > 0 {
 		fmt.Printf(
-			"There were %d Activities found for date range: %v - %v\n",
+			"There were %d Daily Activities found for date range: %v - %v\n",
 			len(activities.Items),
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
-			"First Activity ID: %s\n",
+			"First Daily Activity ID: %s\n",
 			activities.Items[0].ID,
 		)
 
@@ -38,7 +38,7 @@ func main() {
 			return
 		}
 
-		fmt.Printf("Single Activity Score: %d\n", singleActivity.Score)
+		fmt.Printf("Single Daily Activity Score: %d\n", singleActivity.Score)
 
 	} else {
 		fmt.Printf(
