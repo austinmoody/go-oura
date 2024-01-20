@@ -98,8 +98,12 @@ func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(ActivityUrl+"/%s", documentId), nil)
+// GetActivity accepts a single Daily Activity ID and returns a DailyActivity object.
+func (c *Client) GetActivity(dailyActivityId string) (DailyActivity, *OuraError) {
+	apiResponse, ouraError := c.Getter(
+		fmt.Sprintf(ActivityUrl+"/%s", dailyActivityId),
+		nil,
+	)
 
 	if ouraError != nil {
 		return DailyActivity{},
@@ -119,6 +123,9 @@ func (c *Client) GetActivity(documentId string) (DailyActivity, *OuraError) {
 	return activity, nil
 }
 
+// GetActivities accepts a start & end date and returns a DailyActivities object which will contain any DailyActivity
+// found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
+// activities if the date range returns a large set.
 func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (DailyActivities, *OuraError) {
 
 	urlParameters := url.Values{
