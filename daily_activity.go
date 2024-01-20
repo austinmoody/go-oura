@@ -66,7 +66,7 @@ type Met struct {
 type dailyActivityBase DailyActivity
 type dailyActivitiesBase DailyActivities
 
-// UnmarshalJSON is a helper function to convert Daily DailyActivities JSON from the API to the DailyActivities type.
+// UnmarshalJSON is a helper function to convert daily activities JSON from the API to the DailyActivities type.
 func (da *DailyActivities) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
@@ -82,7 +82,7 @@ func (da *DailyActivities) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// UnmarshalJSON is a helper function to convert an DailyActivity JSON from the API to the DailyActivity type.
+// UnmarshalJSON is a helper function to convert a daily activity JSON from the API to the DailyActivity type.
 func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
