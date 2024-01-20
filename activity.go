@@ -1,3 +1,4 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
 package go_oura
 
 import (
@@ -8,11 +9,14 @@ import (
 	"time"
 )
 
+// Activities stores a list of daily Activity items along with a token which may be used to pull the next batch of Activity items from the API.
+// https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
 type Activities struct {
 	Items     []Activity `json:"data"`
 	NextToken *string    `json:"next_token"`
 }
 
+// Activity describes daily activity summary values and detailed activity levels.
 type Activity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`
@@ -42,6 +46,7 @@ type Activity struct {
 	Timestamp                 time.Time   `json:"timestamp"`
 }
 
+// Contributor describes data points which contribute to the summary Activity score
 type Contributor struct {
 	MeetDailyTargets  int `json:"meet_daily_targets"`
 	MoveEveryHour     int `json:"move_every_hour"`
@@ -51,6 +56,7 @@ type Contributor struct {
 	TrainingVolume    int `json:"training_volume"`
 }
 
+// Met is a Metabolic Equivalent of Task Minutes.
 type Met struct {
 	Interval  float64   `json:"interval"`
 	Items     []float64 `json:"items"`
@@ -60,6 +66,7 @@ type Met struct {
 type dailyActivityBase Activity
 type dailyActivitiesBase Activities
 
+// UnmarshalJSON is a helper function to convert Daily Activities JSON from the API to the Activities type.
 func (da *Activities) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
@@ -75,6 +82,7 @@ func (da *Activities) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSON is a helper function to convert an Activity JSON from the API to the Activity type.
 func (da *Activity) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
