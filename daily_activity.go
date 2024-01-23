@@ -21,7 +21,7 @@ type DailyActivities struct {
 }
 
 // DailyActivity describes daily activity summary values and detailed activity levels.
-// JSON described athttps://cloud.ouraring.com/v2/docs#operation/Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get
 type DailyActivity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`
