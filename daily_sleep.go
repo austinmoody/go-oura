@@ -1,4 +1,8 @@
 // Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to Daily Sleep recorded by the Oura Ring
+// Daily Sleep API description: https://cloud.ouraring.com/v2/docs#tag/Daily-Sleep-Routes
+
 package go_oura
 
 import (
@@ -10,13 +14,14 @@ import (
 )
 
 // DailySleeps stores a list of daily sleep items along with a token which may be used to pull the next batch of DailySleep items from the API.
-// https://cloud.ouraring.com/v2/docs#tag/Daily-Sleep-Routes
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_daily_sleep_Documents_v2_usercollection_daily_sleep_get
 type DailySleeps struct {
 	Items     []DailySleep `json:"data"`
 	NextToken string       `json:"next_token"`
 }
 
 // DailySleep describes a single sleep session
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_sleep_Document_v2_usercollection_daily_sleep__document_id__get
 type DailySleep struct {
 	ID           string            `json:"id"`
 	Contributors SleepContributors `json:"contributors"`

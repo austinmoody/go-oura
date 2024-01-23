@@ -1,4 +1,8 @@
 // Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to Daily Activities recorded by the Oura Ring
+// Daily Activities API description: https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
+
 package go_oura
 
 import (
@@ -10,13 +14,14 @@ import (
 )
 
 // DailyActivities stores a list of daily activity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
-// https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_daily_activity_Documents_v2_usercollection_daily_activity_get
 type DailyActivities struct {
 	Items     []DailyActivity `json:"data"`
 	NextToken *string         `json:"next_token"`
 }
 
 // DailyActivity describes daily activity summary values and detailed activity levels.
+// JSON described athttps://cloud.ouraring.com/v2/docs#operation/Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get
 type DailyActivity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`

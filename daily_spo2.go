@@ -1,4 +1,10 @@
 // Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to Daily SpO2 recorded by the Oura Ring
+// SpO2 = Blood Oxygenation
+// Only available starting with Gen 3 Oura Rings
+// Daily SpO2 API description: https://cloud.ouraring.com/v2/docs#tag/Daily-Spo2-Routes
+
 package go_oura
 
 import (
@@ -10,14 +16,14 @@ import (
 )
 
 // DailySpo2Readings stores a list of daily spo2 readings along with a token which may be used to pull the next batch of DailySpo2Reading items from the API.
-// https://cloud.ouraring.com/v2/docs#tag/Daily-Spo2-Routes
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_daily_spo2_Documents_v2_usercollection_daily_spo2_get
 type DailySpo2Readings struct {
 	Items     []DailySpo2Reading `json:"data"`
 	NextToken *string            `json:"next_token"`
 }
 
-// DailySpo2Reading include daily SpO2 average. SpO2 = Blood Oxygenation.
-// Only available starting with Gen 3 Oura Rings
+// DailySpo2Reading include daily SpO2 average.
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_spo2_Document_v2_usercollection_daily_spo2__document_id__get
 type DailySpo2Reading struct {
 	ID         string         `json:"id"`
 	Day        Date           `json:"day"`

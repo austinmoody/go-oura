@@ -1,4 +1,8 @@
 // Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to Daily Readiness recorded by the Oura Ring
+// Daily Readiness API description: https://cloud.ouraring.com/v2/docs#tag/Daily-Readiness-Routes
+
 package go_oura
 
 import (
@@ -10,13 +14,14 @@ import (
 )
 
 // DailyReadinesses stores a list of daily DailyActivity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
-// https://cloud.ouraring.com/v2/docs#tag/Daily-Readiness-Routes
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_daily_readiness_Documents_v2_usercollection_daily_readiness_get
 type DailyReadinesses struct {
 	Items     []DailyReadiness `json:"data"`
 	NextToken *string          `json:"next_token"`
 }
 
 // ReadinessContributors describes data points which contribute to the summary DailyReadiness score
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_readiness_Document_v2_usercollection_daily_readiness__document_id__get
 type ReadinessContributors struct {
 	ActivityBalance     int `json:"activity_balance"`
 	BodyTemperature     int `json:"body_temperature"`

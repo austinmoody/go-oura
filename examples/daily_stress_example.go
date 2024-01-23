@@ -15,20 +15,20 @@ func main() {
 
 	stressDocs, err := client.GetStresses(threeDaysAgo, oneDaysAgo, nil)
 	if err != nil {
-		fmt.Printf("Error getting Stress Items: %v", err)
+		fmt.Printf("Error getting DailyStress Items: %v", err)
 		return
 	}
 
 	if len(stressDocs.Items) > 0 {
 		fmt.Printf(
-			"There were %d Stress Items found for date range: %v - %v\n",
+			"There were %d DailyStress Items found for date range: %v - %v\n",
 			len(stressDocs.Items),
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
-			"First Stresses ID: %s\n",
+			"First DailyStresses ID: %s\n",
 			stressDocs.Items[0].ID,
 		)
 
@@ -38,11 +38,11 @@ func main() {
 			return
 		}
 
-		fmt.Printf("Single Stress High: %d\n", singleStressDoc.StressHigh)
+		fmt.Printf("Single DailyStress High: %d\n", singleStressDoc.StressHigh)
 
 	} else {
 		fmt.Printf(
-			"No Stress Items were found for the date range: %v - %v",
+			"No DailyStress Items were found for the date range: %v - %v",
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
