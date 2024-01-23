@@ -15,14 +15,14 @@ func TestGetSpo2Reading(t *testing.T) {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.Spo2Reading
+		expectedOutput go_oura.DailySpo2Reading
 		expectErr      bool
 	}{
 		{
 			name:         "Valid_Spo2_Response",
 			documentId:   "1",
 			mockResponse: `{"id":"324f5ba1-f3f7-410a-b41e-c6585d1eaacc","day":"2024-01-09","spo2_percentage":{"average":98.781}}`,
-			expectedOutput: go_oura.Spo2Reading{
+			expectedOutput: go_oura.DailySpo2Reading{
 				ID: "324f5ba1-f3f7-410a-b41e-c6585d1eaacc",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
@@ -39,7 +39,7 @@ func TestGetSpo2Reading(t *testing.T) {
 			name:           "Invalid_Spo2_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Spo2Reading{},
+			expectedOutput: go_oura.DailySpo2Reading{},
 			expectErr:      true,
 		},
 	}
@@ -86,7 +86,7 @@ func TestGetSpo2Readings(t *testing.T) {
 		startDate      time.Time
 		endDate        time.Time
 		mockResponse   string
-		expectedOutput go_oura.Spo2Readings
+		expectedOutput go_oura.DailySpo2Readings
 		expectErr      bool
 	}{
 		{
@@ -94,8 +94,8 @@ func TestGetSpo2Readings(t *testing.T) {
 			startDate:    time.Now().Add(-1 * time.Hour),
 			endDate:      time.Now().Add(-2 * time.Hour),
 			mockResponse: `{"data":[{"id":"324f5ba1-f3f7-410a-b41e-c6585d1eaacc","day":"2024-01-09","spo2_percentage":{"average":98.781}},{"id":"4c2509bd-4a67-4694-9a62-e0582c2c34a2","day":"2024-01-10","spo2_percentage":{"average":98.688}}],"next_token":null}`,
-			expectedOutput: go_oura.Spo2Readings{
-				Items: []go_oura.Spo2Reading{
+			expectedOutput: go_oura.DailySpo2Readings{
+				Items: []go_oura.DailySpo2Reading{
 					{
 						ID: "324f5ba1-f3f7-410a-b41e-c6585d1eaacc",
 						Day: func() go_oura.Date {
@@ -126,7 +126,7 @@ func TestGetSpo2Readings(t *testing.T) {
 			startDate:      time.Now().Add(-3 * time.Hour),
 			endDate:        time.Now().Add(-4 * time.Hour),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Spo2Readings{},
+			expectedOutput: go_oura.DailySpo2Readings{},
 			expectErr:      true,
 		},
 	}
