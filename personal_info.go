@@ -1,3 +1,8 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to a user's personal information
+// Personal Info API description: https://cloud.ouraring.com/v2/docs#tag/Personal-Info-Routes
+
 package go_oura
 
 import (
@@ -6,6 +11,8 @@ import (
 	"reflect"
 )
 
+// PersonalInfo stores the user's information
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_Personal_Info_Document_v2_usercollection_personal_info_get
 type PersonalInfo struct {
 	ID     string  `json:"id"`
 	Age    int     `json:"age"`
@@ -17,6 +24,7 @@ type PersonalInfo struct {
 
 type personalInfoBase PersonalInfo
 
+// UnmarshalJSON is a helper function to convert a personal info JSON from the API to the PersonalInfo type.
 func (pi *PersonalInfo) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*pi), data); err != nil {
 		return err
@@ -33,6 +41,7 @@ func (pi *PersonalInfo) UnmarshalJSON(data []byte) error {
 
 }
 
+// GetPersonalInfo calls the Oura Ring API and returns a PersonalInfo object describing the user
 func (c *Client) GetPersonalInfo() (PersonalInfo, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(PersonalInfoUrl, nil)
