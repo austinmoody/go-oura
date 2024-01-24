@@ -13,7 +13,7 @@ const (
 const (
 	ActivityUrl          = "/usercollection/daily_activity"
 	ReadinessUrl         = "/usercollection/daily_readiness"
-	SleepUrl             = "/usercollection/daily_sleep"
+	DailySleepUrl        = "/usercollection/daily_sleep"
 	HeartRateUrl         = "/usercollection/heartrate"
 	Spo2Url              = "/usercollection/daily_spo2"
 	StressUrl            = "/usercollection/daily_stress"
@@ -22,6 +22,7 @@ const (
 	RestModeUrl          = "/usercollection/rest_mode_period"
 	RingConfigurationUrl = "/usercollection/ring_configuration"
 	SessionUrl           = "/usercollection/session"
+	SleepUrl             = "/usercollection/sleep"
 	SleepTimeUrl         = "/usercollection/sleep_time"
 	WorkoutUrl           = "/usercollection/workout"
 )
