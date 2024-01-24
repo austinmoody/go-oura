@@ -1,3 +1,8 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to workouts recorded by an Oura Ring
+// https://cloud.ouraring.com/v2/docs#tag/Workout-Routes
+
 package go_oura
 
 import (
@@ -8,11 +13,15 @@ import (
 	"time"
 )
 
+// Workouts stores a list of workout items along with a token which may be used to pull the next batch of Workout items from the API.
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_workout_Documents_v2_usercollection_workout_get
 type Workouts struct {
 	Items     []Workout `json:"data"`
 	NextToken string    `json:"next_token"`
 }
 
+// Workout stores specifics for a single recorded workout
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_workout_Document_v2_usercollection_workout__document_id__get
 type Workout struct {
 	Id            string    `json:"id"`
 	Activity      string    `json:"activity"`
@@ -29,6 +38,7 @@ type Workout struct {
 type workoutBase Workout
 type workoutsBase Workouts
 
+// UnmarshalJSON is a helper function to convert a workout JSON from the API to the Workout type.
 func (w *Workout) UnmarshalJSON(data []byte) error {
 
 	if err := checkJSONFields(reflect.TypeOf(*w), data); err != nil {
@@ -46,6 +56,7 @@ func (w *Workout) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSON is a helper function to convert multiple workouts JSON from the API to the Workouts type.
 func (w *Workouts) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*w), data); err != nil {
 		return err
@@ -61,6 +72,9 @@ func (w *Workouts) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// GetWorkouts accepts a start & end date and returns a Workouts object which will contain any Workout
+// found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
+// workouts if the date range returns a large set.
 func (c *Client) GetWorkouts(startDate time.Time, endDate time.Time, nextToken *string) (Workouts, *OuraError) {
 
 	urlParameters := url.Values{
@@ -95,11 +109,12 @@ func (c *Client) GetWorkouts(startDate time.Time, endDate time.Time, nextToken *
 	return workouts, nil
 }
 
-func (c *Client) GetWorkout(documentId string) (Workout, *OuraError) {
+// GetWorkout calls the Oura Ring API with a specific workout identifer and returns a Workout object
+func (c *Client) GetWorkout(workoutId string) (Workout, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(fmt.Sprintf(
 		WorkoutUrl+"/%s",
-		documentId,
+		workoutId,
 	), nil)
 
 	if ouraError != nil {
