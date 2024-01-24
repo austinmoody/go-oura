@@ -11,7 +11,7 @@ func main() {
 
 	client := go_oura.NewClient(os.Getenv("OURA_ACCESS_TOKEN"))
 
-	// Get Multiple Readiness Items (if they exist) for the last couple days.
+	// Get Multiple DailyReadiness Items (if they exist) for the last couple days.
 	twoDaysAgo := time.Now().Add(-48 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
@@ -23,14 +23,14 @@ func main() {
 
 	if len(readiness.Items) > 0 {
 		fmt.Printf(
-			"There were %d Readiness Items found for date range: %v - %v\n",
+			"There were %d DailyReadiness Items found for date range: %v - %v\n",
 			len(readiness.Items),
 			twoDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
-			"First Readiness ID: %s\n",
+			"First DailyReadiness ID: %s\n",
 			readiness.Items[0].Id,
 		)
 
@@ -42,11 +42,11 @@ func main() {
 			return
 		}
 
-		fmt.Printf("Single Readiness Score: %d\n", singleReadiness.Score)
+		fmt.Printf("Single DailyReadiness Score: %d\n", singleReadiness.Score)
 
 	} else {
 		fmt.Printf(
-			"No Readiness Items were found for the date range: %v - %v",
+			"No DailyReadiness Items were found for the date range: %v - %v",
 			twoDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)

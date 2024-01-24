@@ -1,3 +1,8 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to Daily Activities recorded by the Oura Ring
+// Daily Activities API description: https://cloud.ouraring.com/v2/docs#tag/Daily-Activity-Routes
+
 package go_oura
 
 import (
@@ -8,12 +13,16 @@ import (
 	"time"
 )
 
-type Activities struct {
-	Items     []Activity `json:"data"`
-	NextToken *string    `json:"next_token"`
+// DailyActivities stores a list of daily activity items along with a token which may be used to pull the next batch of DailyActivity items from the API.
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_daily_activity_Documents_v2_usercollection_daily_activity_get
+type DailyActivities struct {
+	Items     []DailyActivity `json:"data"`
+	NextToken *string         `json:"next_token"`
 }
 
-type Activity struct {
+// DailyActivity describes daily activity summary values and detailed activity levels.
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get
+type DailyActivity struct {
 	ID                        string      `json:"id"`
 	Class5Min                 string      `json:"class_5_min"`
 	Score                     int         `json:"score"`
@@ -42,6 +51,7 @@ type Activity struct {
 	Timestamp                 time.Time   `json:"timestamp"`
 }
 
+// Contributor describes data points which contribute to the summary DailyActivity score
 type Contributor struct {
 	MeetDailyTargets  int `json:"meet_daily_targets"`
 	MoveEveryHour     int `json:"move_every_hour"`
@@ -51,16 +61,18 @@ type Contributor struct {
 	TrainingVolume    int `json:"training_volume"`
 }
 
+// Met is a Metabolic Equivalent of Task Minutes.
 type Met struct {
 	Interval  float64   `json:"interval"`
 	Items     []float64 `json:"items"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
-type dailyActivityBase Activity
-type dailyActivitiesBase Activities
+type dailyActivityBase DailyActivity
+type dailyActivitiesBase DailyActivities
 
-func (da *Activities) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert daily activities JSON from the API to the DailyActivities type.
+func (da *DailyActivities) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
 	}
@@ -71,11 +83,12 @@ func (da *Activities) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = Activities(aBase)
+	*da = DailyActivities(aBase)
 	return nil
 }
 
-func (da *Activity) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON is a helper function to convert a daily activity JSON from the API to the DailyActivity type.
+func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*da), data); err != nil {
 		return err
 	}
@@ -86,22 +99,26 @@ func (da *Activity) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*da = Activity(aBase)
+	*da = DailyActivity(aBase)
 	return nil
 }
 
-func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(ActivityUrl+"/%s", documentId), nil)
+// GetActivity accepts a single Daily Activity ID and returns a DailyActivity object.
+func (c *Client) GetActivity(dailyActivityId string) (DailyActivity, *OuraError) {
+	apiResponse, ouraError := c.Getter(
+		fmt.Sprintf(ActivityUrl+"/%s", dailyActivityId),
+		nil,
+	)
 
 	if ouraError != nil {
-		return Activity{},
+		return DailyActivity{},
 			ouraError
 	}
 
-	var activity Activity
+	var activity DailyActivity
 	err := json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
-		return Activity{},
+		return DailyActivity{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),
@@ -111,7 +128,10 @@ func (c *Client) GetActivity(documentId string) (Activity, *OuraError) {
 	return activity, nil
 }
 
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (Activities, *OuraError) {
+// GetActivities accepts a start & end date and returns a DailyActivities object which will contain any DailyActivity
+// found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
+// activities if the date range returns a large set.
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (DailyActivities, *OuraError) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -128,13 +148,13 @@ func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken
 	)
 
 	if ouraError != nil {
-		return Activities{}, ouraError
+		return DailyActivities{}, ouraError
 	}
 
-	var activities Activities
+	var activities DailyActivities
 	err := json.Unmarshal(*apiResponse, &activities)
 	if err != nil {
-		return Activities{},
+		return DailyActivities{},
 			&OuraError{
 				Code:    0,
 				Message: fmt.Sprintf("failed to process response body with error: %v", err),

@@ -1,3 +1,9 @@
+// Package go_oura provides a simple binding to the Oura Ring v2 API
+
+// This file contains code related to sleep time, which according to the Oura Ring documentation are:
+// "Recommendations for the optimal bedtime window that is calculated based on sleep data."
+// https://cloud.ouraring.com/v2/docs#tag/Sleep-Time-Routes
+
 package go_oura
 
 import (
@@ -8,11 +14,15 @@ import (
 	"time"
 )
 
+// SleepTimes stores a list of sleep time items along with a token which may be used to pull the next batch of SleepTime items from the API.
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_sleep_time_Documents_v2_usercollection_sleep_time_get
 type SleepTimes struct {
 	Items     []SleepTime `json:"data"`
 	NextToken string      `json:"next_token"`
 }
 
+// SleepTime stores specifics for a single day optimal bedtime window
+// JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_sleep_time_Document_v2_usercollection_sleep_time__document_id__get
 type SleepTime struct {
 	ID             string          `json:"id"`
 	Day            Date            `json:"day"`
@@ -30,6 +40,7 @@ type OptimalBedtime struct {
 type sleepTimeBase SleepTime
 type sleepTimesBase SleepTimes
 
+// UnmarshalJSON is a helper function to convert a sleep time JSON from the API to the SleepTime type.
 func (st *SleepTime) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*st), data); err != nil {
 		return err
@@ -45,6 +56,7 @@ func (st *SleepTime) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSON is a helper function to convert multiple sleep times JSON from the API to the SleepTimes type.
 func (st *SleepTimes) UnmarshalJSON(data []byte) error {
 	if err := checkJSONFields(reflect.TypeOf(*st), data); err != nil {
 		return err
@@ -60,6 +72,9 @@ func (st *SleepTimes) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// GetSleepTimes accepts a start & end date and returns a SleepTimes object which will contain any SleepTime
+// found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
+// sleep times if the date range returns a large set.
 func (c *Client) GetSleepTimes(startDate time.Time, endDate time.Time, nextToken *string) (SleepTimes, *OuraError) {
 
 	urlParameters := url.Values{
@@ -94,10 +109,11 @@ func (c *Client) GetSleepTimes(startDate time.Time, endDate time.Time, nextToken
 	return sleepTimes, nil
 }
 
-func (c *Client) GetSleepTime(documentId string) (SleepTime, *OuraError) {
+// GetSleepTime calls the Oura Ring API with a specific sleep identifer and returns a SleepTime object
+func (c *Client) GetSleepTime(sleepTimeId string) (SleepTime, *OuraError) {
 
 	apiResponse, ouraError := c.Getter(
-		fmt.Sprintf(SleepTimeUrl+"/%s", documentId),
+		fmt.Sprintf(SleepTimeUrl+"/%s", sleepTimeId),
 		nil,
 	)
 

@@ -16,7 +16,7 @@ func TestGetReadinesses(t *testing.T) {
 		startTime      time.Time
 		endTime        time.Time
 		mockResponse   string
-		expectedOutput go_oura.Readinesses
+		expectedOutput go_oura.DailyReadinesses
 		expectErr      bool
 	}{
 		{
@@ -24,8 +24,8 @@ func TestGetReadinesses(t *testing.T) {
 			startTime:    time.Now().Add(-1 * time.Hour),
 			endTime:      time.Now().Add(-2 * time.Hour),
 			mockResponse: `{"data":[{"id":"29a809a2-778c-4742-b945-e01876b8f32a","contributors":{"activity_balance":86,"body_temperature":89,"hrv_balance":4,"previous_day_activity":88,"previous_night":87,"recovery_index":99,"resting_heart_rate":1,"sleep_balance":90},"day":"2024-01-01","score":63,"temperature_deviation":0.2,"temperature_trend_deviation":0.38,"timestamp":"2024-01-01T00:00:00+00:00"}],"next_token":null}`,
-			expectedOutput: go_oura.Readinesses{
-				Items: []go_oura.Readiness{
+			expectedOutput: go_oura.DailyReadinesses{
+				Items: []go_oura.DailyReadiness{
 					{
 						Id: "29a809a2-778c-4742-b945-e01876b8f32a",
 						Day: func() go_oura.Date {
@@ -42,7 +42,7 @@ func TestGetReadinesses(t *testing.T) {
 							return t
 						}(),
 
-						Contributors: go_oura.Contributors{
+						Contributors: go_oura.ReadinessContributors{
 							ActivityBalance:     86,
 							BodyTemperature:     89,
 							HrvBalance:          4,
@@ -61,7 +61,7 @@ func TestGetReadinesses(t *testing.T) {
 			startTime:      time.Now().Add(-3 * time.Hour),
 			endTime:        time.Now().Add(-4 * time.Hour),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Readinesses{},
+			expectedOutput: go_oura.DailyReadinesses{},
 			expectErr:      true,
 		},
 	}
@@ -108,14 +108,14 @@ func TestGetReadiness(t *testing.T) {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.Readiness
+		expectedOutput go_oura.DailyReadiness
 		expectErr      bool
 	}{
 		{
 			name:         "Valid_Readiness_Response",
 			documentId:   "1",
 			mockResponse: `{"id":"29a809a2-778c-4742-b945-e01876b8f32a","contributors":{"activity_balance":86,"body_temperature":89,"hrv_balance":4,"previous_day_activity":88,"previous_night":87,"recovery_index":99,"resting_heart_rate":1,"sleep_balance":90},"day":"2024-01-01","score":63,"temperature_deviation":0.2,"temperature_trend_deviation":0.38,"timestamp":"2024-01-01T00:00:00+00:00"}`,
-			expectedOutput: go_oura.Readiness{
+			expectedOutput: go_oura.DailyReadiness{
 				Id: "29a809a2-778c-4742-b945-e01876b8f32a",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
@@ -131,7 +131,7 @@ func TestGetReadiness(t *testing.T) {
 					return t
 				}(),
 
-				Contributors: go_oura.Contributors{
+				Contributors: go_oura.ReadinessContributors{
 					ActivityBalance:     86,
 					BodyTemperature:     89,
 					HrvBalance:          4,
@@ -148,7 +148,7 @@ func TestGetReadiness(t *testing.T) {
 			name:           "Invalid_Readiness_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Readiness{},
+			expectedOutput: go_oura.DailyReadiness{},
 			expectErr:      true,
 		},
 	}

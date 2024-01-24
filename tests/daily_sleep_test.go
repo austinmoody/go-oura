@@ -10,36 +10,48 @@ import (
 	"time"
 )
 
-func TestGetSpo2Reading(t *testing.T) {
+func TestGetSleepDocument(t *testing.T) {
 	tt := []struct {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.Spo2Reading
+		expectedOutput go_oura.DailySleep
 		expectErr      bool
 	}{
 		{
-			name:         "Valid_Spo2_Response",
+			name:         "Valid_SleepDocument_Response",
 			documentId:   "1",
-			mockResponse: `{"id":"324f5ba1-f3f7-410a-b41e-c6585d1eaacc","day":"2024-01-09","spo2_percentage":{"average":98.781}}`,
-			expectedOutput: go_oura.Spo2Reading{
-				ID: "324f5ba1-f3f7-410a-b41e-c6585d1eaacc",
+			mockResponse: `{"id":"4eaa0e18-3464-49cc-961a-2ffd5f8ea98e","contributors":{"deep_sleep":63,"efficiency":93,"latency":64,"rem_sleep":95,"restfulness":72,"timing":94,"total_sleep":90},"day":"2024-01-07","score":83,"timestamp":"2024-01-07T00:00:00+00:00"}`,
+			expectedOutput: go_oura.DailySleep{
+				ID: "4eaa0e18-3464-49cc-961a-2ffd5f8ea98e",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
-					t, _ := time.Parse(layout, "2024-01-09")
+					t, _ := time.Parse(layout, "2024-01-07")
 					return go_oura.Date{Time: t}
 				}(),
-				Percentage: go_oura.Spo2Percentage{
-					Average: 98.781,
+				Score: 83,
+				Timestamp: func() time.Time {
+					layout := "2006-01-02T15:04:05Z07:00"
+					t, _ := time.Parse(layout, "2024-01-07T00:00:00+00:00")
+					return t
+				}(),
+				Contributors: go_oura.SleepContributors{
+					DeepSleep:   63,
+					Efficiency:  93,
+					Latency:     64,
+					RemSleep:    95,
+					Restfulness: 72,
+					Timing:      94,
+					TotalSleep:  90,
 				},
 			},
 			expectErr: false,
 		},
 		{
-			name:           "Invalid_Spo2_Response",
+			name:           "Invalid_SleepDocument_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Spo2Reading{},
+			expectedOutput: go_oura.DailySleep{},
 			expectErr:      true,
 		},
 	}
@@ -56,7 +68,7 @@ func TestGetSpo2Reading(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetSpo2Reading(tc.documentId)
+			activity, err := client.GetSleep(tc.documentId)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
@@ -80,53 +92,54 @@ func TestGetSpo2Reading(t *testing.T) {
 	}
 }
 
-func TestGetSpo2Readings(t *testing.T) {
+func TestGetSleepDocuments(t *testing.T) {
 	tt := []struct {
 		name           string
-		startDate      time.Time
-		endDate        time.Time
+		startTime      time.Time
+		endTime        time.Time
 		mockResponse   string
-		expectedOutput go_oura.Spo2Readings
+		expectedOutput go_oura.DailySleeps
 		expectErr      bool
 	}{
 		{
-			name:         "Valid_Multiple_Spo2_Response",
-			startDate:    time.Now().Add(-1 * time.Hour),
-			endDate:      time.Now().Add(-2 * time.Hour),
-			mockResponse: `{"data":[{"id":"324f5ba1-f3f7-410a-b41e-c6585d1eaacc","day":"2024-01-09","spo2_percentage":{"average":98.781}},{"id":"4c2509bd-4a67-4694-9a62-e0582c2c34a2","day":"2024-01-10","spo2_percentage":{"average":98.688}}],"next_token":null}`,
-			expectedOutput: go_oura.Spo2Readings{
-				Items: []go_oura.Spo2Reading{
+			name:         "Valid_SleepDocuments_Response",
+			startTime:    time.Now().Add(-1 * time.Hour),
+			endTime:      time.Now().Add(-2 * time.Hour),
+			mockResponse: `{"data":[{"id":"4eaa0e18-3464-49cc-961a-2ffd5f8ea98e","contributors":{"deep_sleep":63,"efficiency":93,"latency":64,"rem_sleep":95,"restfulness":72,"timing":94,"total_sleep":90},"day":"2024-01-07","score":83,"timestamp":"2024-01-07T00:00:00+00:00"}],"next_token":null}`,
+			expectedOutput: go_oura.DailySleeps{
+				Items: []go_oura.DailySleep{
 					{
-						ID: "324f5ba1-f3f7-410a-b41e-c6585d1eaacc",
+						ID: "4eaa0e18-3464-49cc-961a-2ffd5f8ea98e",
 						Day: func() go_oura.Date {
 							layout := "2006-01-02"
-							t, _ := time.Parse(layout, "2024-01-09")
+							t, _ := time.Parse(layout, "2024-01-07")
 							return go_oura.Date{Time: t}
 						}(),
-						Percentage: go_oura.Spo2Percentage{
-							Average: 98.781,
-						},
-					},
-					{
-						ID: "4c2509bd-4a67-4694-9a62-e0582c2c34a2",
-						Day: func() go_oura.Date {
-							layout := "2006-01-02"
-							t, _ := time.Parse(layout, "2024-01-10")
-							return go_oura.Date{Time: t}
+						Score: 83,
+						Timestamp: func() time.Time {
+							layout := "2006-01-02T15:04:05Z07:00"
+							t, _ := time.Parse(layout, "2024-01-07T00:00:00+00:00")
+							return t
 						}(),
-						Percentage: go_oura.Spo2Percentage{
-							Average: 98.688,
+						Contributors: go_oura.SleepContributors{
+							DeepSleep:   63,
+							Efficiency:  93,
+							Latency:     64,
+							RemSleep:    95,
+							Restfulness: 72,
+							Timing:      94,
+							TotalSleep:  90,
 						},
 					},
 				},
 			},
 			expectErr: false,
 		}, {
-			name:           "Invalid_Multiple_Spo2_Response",
-			startDate:      time.Now().Add(-3 * time.Hour),
-			endDate:        time.Now().Add(-4 * time.Hour),
+			name:           "Invalid_SleepDocuments_Response",
+			startTime:      time.Now(),
+			endTime:        time.Now(),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Spo2Readings{},
+			expectedOutput: go_oura.DailySleeps{},
 			expectErr:      true,
 		},
 	}
@@ -143,7 +156,7 @@ func TestGetSpo2Readings(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetSpo2Readings(tc.startDate, tc.endDate, nil)
+			activity, err := client.GetSleeps(tc.startTime, tc.endTime, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
@@ -165,5 +178,4 @@ func TestGetSpo2Readings(t *testing.T) {
 			}
 		})
 	}
-
 }

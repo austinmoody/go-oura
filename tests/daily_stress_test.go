@@ -15,14 +15,14 @@ func TestGetStressDocument(t *testing.T) {
 		name           string
 		documentId     string
 		mockResponse   string
-		expectedOutput go_oura.Stress
+		expectedOutput go_oura.DailyStress
 		expectErr      bool
 	}{
 		{
 			name:         "Valid_Stress_Response",
 			documentId:   "1",
 			mockResponse: `{"id":"c9e6a9a9-2af3-4284-bbb7-038346c06bc9","day":"2024-01-11","stress_high":6300,"recovery_high":1800,"day_summary":"normal"}`,
-			expectedOutput: go_oura.Stress{
+			expectedOutput: go_oura.DailyStress{
 				ID: "c9e6a9a9-2af3-4284-bbb7-038346c06bc9",
 				Day: func() go_oura.Date {
 					layout := "2006-01-02"
@@ -39,7 +39,7 @@ func TestGetStressDocument(t *testing.T) {
 			name:           "Invalid_Stress_Response",
 			documentId:     "2",
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Stress{},
+			expectedOutput: go_oura.DailyStress{},
 			expectErr:      true,
 		},
 	}
@@ -86,7 +86,7 @@ func TestGetStressDocuments(t *testing.T) {
 		startTime      time.Time
 		endTime        time.Time
 		mockResponse   string
-		expectedOutput go_oura.Stresses
+		expectedOutput go_oura.DailyStresses
 		expectErr      bool
 	}{
 		{
@@ -94,8 +94,8 @@ func TestGetStressDocuments(t *testing.T) {
 			startTime:    time.Now().Add(-1 * time.Hour),
 			endTime:      time.Now().Add(-2 * time.Hour),
 			mockResponse: `{"data":[{"id":"1304bda1-d5a0-4243-a321-0e48095149cc","day":"2024-01-09","stress_high":3600,"recovery_high":900,"day_summary":null},{"id":"1e08f663-2efa-41aa-901b-99b17cbeafcd","day":"2024-01-10","stress_high":900,"recovery_high":4500,"day_summary":"normal"}],"next_token":null}`,
-			expectedOutput: go_oura.Stresses{
-				Items: []go_oura.Stress{
+			expectedOutput: go_oura.DailyStresses{
+				Items: []go_oura.DailyStress{
 					{
 						ID: "1304bda1-d5a0-4243-a321-0e48095149cc",
 						Day: func() go_oura.Date {
@@ -128,7 +128,7 @@ func TestGetStressDocuments(t *testing.T) {
 			startTime:      time.Now(),
 			endTime:        time.Now(),
 			mockResponse:   `{"message": "invalid"}`,
-			expectedOutput: go_oura.Stresses{},
+			expectedOutput: go_oura.DailyStresses{},
 			expectErr:      true,
 		},
 	}

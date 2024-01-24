@@ -15,20 +15,20 @@ func main() {
 
 	sleepDocs, err := client.GetSleeps(threeDaysAgo, oneDaysAgo, nil)
 	if err != nil {
-		fmt.Printf("Error getting Sleep Items: %v", err)
+		fmt.Printf("Error getting DailySleep Items: %v", err)
 		return
 	}
 
 	if len(sleepDocs.Items) > 0 {
 		fmt.Printf(
-			"There were %d Sleep Items found for date range: %v - %v\n",
+			"There were %d DailySleep Items found for date range: %v - %v\n",
 			len(sleepDocs.Items),
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
 
 		fmt.Printf(
-			"First Sleeps ID: %s\n",
+			"First DailySleeps ID: %s\n",
 			sleepDocs.Items[0].ID,
 		)
 
@@ -38,12 +38,12 @@ func main() {
 			return
 		}
 
-		// Match the field 'Score' in Sleep struct or replace it with the correct field
-		fmt.Printf("Single Sleep Score: %d\n", singleSleepDoc.Score)
+		// Match the field 'Score' in DailySleep struct or replace it with the correct field
+		fmt.Printf("Single DailySleep Score: %d\n", singleSleepDoc.Score)
 
 	} else {
 		fmt.Printf(
-			"No Sleep Items were found for the date range: %v - %v",
+			"No DailySleep Items were found for the date range: %v - %v",
 			threeDaysAgo.Format("02-Jan-2006"),
 			oneDaysAgo.Format("02-Jan-2006"),
 		)
