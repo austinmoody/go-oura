@@ -16,31 +16,31 @@ import (
 // Sleeps stores a list of sleep items along with a token which may be used to pull the next batch of Sleep items from the API.
 // JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_sleep_Documents_v2_usercollection_sleep_get
 type Sleeps struct {
-	Items     []DailySleep `json:"data"`
-	NextToken string       `json:"next_token"`
+	Items     []Sleep `json:"data"`
+	NextToken string  `json:"next_token"`
 }
 
 // Sleep describes a single sleep session
 // JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_sleep_Document_v2_usercollection_sleep__document_id__get
 type Sleep struct {
-	Id                string    `json:"id"`
+	ID                string    `json:"id"`
 	AverageBreath     float64   `json:"average_breath"`
 	AverageHeartRate  float64   `json:"average_heart_rate"`
 	AverageHrv        int       `json:"average_hrv"`
 	AwakeTime         int       `json:"awake_time"`
 	BedtimeEnd        time.Time `json:"bedtime_end"`
 	BedtimeStart      time.Time `json:"bedtime_start"`
-	Day               string    `json:"day"`
+	Day               Date      `json:"day"`
 	DeepSleepDuration int       `json:"deep_sleep_duration"`
 	Efficiency        int       `json:"efficiency"`
 	HeartRate         struct {
-		Interval  int       `json:"interval"`
-		Items     []int     `json:"items"`
+		Interval  float64   `json:"interval"`
+		Items     []float64 `json:"items"`
 		Timestamp time.Time `json:"timestamp"`
 	} `json:"heart_rate"`
 	Hrv struct {
-		Interval  int       `json:"interval"`
-		Items     []int     `json:"items"`
+		Interval  float64   `json:"interval"`
+		Items     []float64 `json:"items"`
 		Timestamp time.Time `json:"timestamp"`
 	} `json:"hrv"`
 	Latency            int    `json:"latency"`
