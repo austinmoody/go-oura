@@ -18,6 +18,21 @@ type IntervalItems struct {
 
 type intervalItemsBase IntervalItems
 
+func (ii *IntervalItems) UnmarshalJSON(data []byte) error {
+	if err := checkJSONFields(reflect.TypeOf(*ii), data); err != nil {
+		return err
+	}
+
+	var documentBase intervalItemsBase
+	err := json.Unmarshal(data, &documentBase)
+	if err != nil {
+		return err
+	}
+
+	*ii = IntervalItems(documentBase)
+	return nil
+}
+
 // Contributors is a common data type used by different Oura Ring types and describes data points which contribute
 // to a score.
 type Contributors struct {
