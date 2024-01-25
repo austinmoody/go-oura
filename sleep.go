@@ -23,56 +23,41 @@ type Sleeps struct {
 // Sleep describes a single sleep session
 // JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_sleep_Document_v2_usercollection_sleep__document_id__get
 type Sleep struct {
-	ID                string    `json:"id"`
-	AverageBreath     float64   `json:"average_breath"`
-	AverageHeartRate  float64   `json:"average_heart_rate"`
-	AverageHrv        int       `json:"average_hrv"`
-	AwakeTime         int       `json:"awake_time"`
-	BedtimeEnd        time.Time `json:"bedtime_end"`
-	BedtimeStart      time.Time `json:"bedtime_start"`
-	Day               Date      `json:"day"`
-	DeepSleepDuration int       `json:"deep_sleep_duration"`
-	Efficiency        int       `json:"efficiency"`
-	HeartRate         struct {
-		Interval  float64   `json:"interval"`
-		Items     []float64 `json:"items"`
-		Timestamp time.Time `json:"timestamp"`
-	} `json:"heart_rate"`
-	Hrv struct {
-		Interval  float64   `json:"interval"`
-		Items     []float64 `json:"items"`
-		Timestamp time.Time `json:"timestamp"`
-	} `json:"hrv"`
-	Latency            int    `json:"latency"`
-	LightSleepDuration int    `json:"light_sleep_duration"`
-	LowBatteryAlert    bool   `json:"low_battery_alert"`
-	LowestHeartRate    int    `json:"lowest_heart_rate"`
-	Movement30Sec      string `json:"movement_30_sec"`
-	Period             int    `json:"period"`
-	Readiness          struct {
-		Contributors struct {
-			ActivityBalance     int `json:"activity_balance"`
-			BodyTemperature     int `json:"body_temperature"`
-			HrvBalance          int `json:"hrv_balance"`
-			PreviousDayActivity int `json:"previous_day_activity"`
-			PreviousNight       int `json:"previous_night"`
-			RecoveryIndex       int `json:"recovery_index"`
-			RestingHeartRate    int `json:"resting_heart_rate"`
-			SleepBalance        int `json:"sleep_balance"`
-		} `json:"contributors"`
-		Score                     int     `json:"score"`
-		TemperatureDeviation      float64 `json:"temperature_deviation"`
-		TemperatureTrendDeviation float64 `json:"temperature_trend_deviation"`
-	} `json:"readiness"`
-	ReadinessScoreDelta   int    `json:"readiness_score_delta"`
-	RemSleepDuration      int    `json:"rem_sleep_duration"`
-	RestlessPeriods       int    `json:"restless_periods"`
-	SleepPhase5Min        string `json:"sleep_phase_5_min"`
-	SleepScoreDelta       int    `json:"sleep_score_delta"`
-	SleepAlgorithmVersion string `json:"sleep_algorithm_version"`
-	TimeInBed             int    `json:"time_in_bed"`
-	TotalSleepDuration    int    `json:"total_sleep_duration"`
-	Type                  string `json:"type"`
+	ID                    string         `json:"id"`
+	AverageBreath         float64        `json:"average_breath"`
+	AverageHeartRate      float64        `json:"average_heart_rate"`
+	AverageHrv            int            `json:"average_hrv"`
+	AwakeTime             int            `json:"awake_time"`
+	BedtimeEnd            time.Time      `json:"bedtime_end"`
+	BedtimeStart          time.Time      `json:"bedtime_start"`
+	Day                   Date           `json:"day"`
+	DeepSleepDuration     int            `json:"deep_sleep_duration"`
+	Efficiency            int            `json:"efficiency"`
+	HeartRate             IntervalItems  `json:"heart_rate"`
+	Hrv                   IntervalItems  `json:"hrv"`
+	Latency               int            `json:"latency"`
+	LightSleepDuration    int            `json:"light_sleep_duration"`
+	LowBatteryAlert       bool           `json:"low_battery_alert"`
+	LowestHeartRate       int            `json:"lowest_heart_rate"`
+	Movement30Sec         string         `json:"movement_30_sec"`
+	Period                int            `json:"period"`
+	Readiness             SleepReadiness `json:"readiness"`
+	ReadinessScoreDelta   int            `json:"readiness_score_delta"`
+	RemSleepDuration      int            `json:"rem_sleep_duration"`
+	RestlessPeriods       int            `json:"restless_periods"`
+	SleepPhase5Min        string         `json:"sleep_phase_5_min"`
+	SleepScoreDelta       int            `json:"sleep_score_delta"`
+	SleepAlgorithmVersion string         `json:"sleep_algorithm_version"`
+	TimeInBed             int            `json:"time_in_bed"`
+	TotalSleepDuration    int            `json:"total_sleep_duration"`
+	Type                  string         `json:"type"`
+}
+
+type SleepReadiness struct {
+	Contributors              Contributors `json:"contributors"`
+	Score                     int          `json:"score"`
+	TemperatureDeviation      float64      `json:"temperature_deviation"`
+	TemperatureTrendDeviation float64      `json:"temperature_trend_deviation"`
 }
 
 type sleepDocumentBase Sleep
