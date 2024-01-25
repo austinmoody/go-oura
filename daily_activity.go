@@ -62,11 +62,7 @@ type Contributor struct {
 }
 
 // Met is a Metabolic Equivalent of Task Minutes.
-type Met struct {
-	Interval  float64   `json:"interval"`
-	Items     []float64 `json:"items"`
-	Timestamp time.Time `json:"timestamp"`
-}
+type Met IntervalItems
 
 type dailyActivityBase DailyActivity
 type dailyActivitiesBase DailyActivities

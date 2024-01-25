@@ -34,11 +34,7 @@ type Session struct {
 	MotionCountData          SessionDataItems `json:"motion_count"`
 }
 
-type SessionDataItems struct {
-	Interval  float64   `json:"interval"`
-	Items     []float64 `json:"items"`
-	Timestamp time.Time `json:"timestamp"`
-}
+type SessionDataItems IntervalItems
 
 type sessionBase Session
 type sessionsBase Sessions

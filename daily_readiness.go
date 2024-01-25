@@ -22,16 +22,7 @@ type DailyReadinesses struct {
 
 // ReadinessContributors describes data points which contribute to the summary DailyReadiness score
 // JSON described at https://cloud.ouraring.com/v2/docs#operation/Single_daily_readiness_Document_v2_usercollection_daily_readiness__document_id__get
-type ReadinessContributors struct {
-	ActivityBalance     int `json:"activity_balance"`
-	BodyTemperature     int `json:"body_temperature"`
-	HrvBalance          int `json:"hrv_balance"`
-	PreviousDayActivity int `json:"previous_day_activity"`
-	PreviousNight       int `json:"previous_night"`
-	RecoveryIndex       int `json:"recovery_index"`
-	RestingHeartRate    int `json:"resting_heart_rate"`
-	SleepBalance        int `json:"sleep_balance"`
-}
+type ReadinessContributors Contributors
 
 // DailyReadiness describes your daily readiness
 type DailyReadiness struct {
