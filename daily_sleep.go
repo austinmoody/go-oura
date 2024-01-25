@@ -76,10 +76,10 @@ func (sd *DailySleeps) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// GetSleeps accepts a start & end date and returns a DailySleeps object which will contain any DailySleep
+// GetDailySleeps accepts a start & end date and returns a DailySleeps object which will contain any DailySleep
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // activities if the date range returns a large set.
-func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (DailySleeps, *OuraError) {
+func (c *Client) GetDailySleeps(startDate time.Time, endDate time.Time, nextToken *string) (DailySleeps, *OuraError) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -91,7 +91,7 @@ func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *st
 	}
 
 	apiResponse, ouraError := c.Getter(
-		SleepUrl,
+		DailySleepUrl,
 		urlParameters,
 	)
 
@@ -114,9 +114,9 @@ func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *st
 }
 
 // GetSleep accepts a single daily sleep ID and returns a DailySleep object.
-func (c *Client) GetSleep(dailySleepId string) (DailySleep, *OuraError) {
+func (c *Client) GetDailySleep(dailySleepId string) (DailySleep, *OuraError) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(SleepUrl+"/%s", dailySleepId), nil)
+	apiResponse, ouraError := c.Getter(fmt.Sprintf(DailySleepUrl+"/%s", dailySleepId), nil)
 
 	if ouraError != nil {
 		return DailySleep{},

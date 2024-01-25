@@ -13,7 +13,7 @@ func main() {
 	threeDaysAgo := time.Now().Add(-72 * time.Hour)
 	oneDaysAgo := time.Now().Add(-24 * time.Hour)
 
-	sleepDocs, err := client.GetSleeps(threeDaysAgo, oneDaysAgo, nil)
+	sleepDocs, err := client.GetDailySleeps(threeDaysAgo, oneDaysAgo, nil)
 	if err != nil {
 		fmt.Printf("Error getting DailySleep Items: %v", err)
 		return
@@ -32,7 +32,7 @@ func main() {
 			sleepDocs.Items[0].ID,
 		)
 
-		singleSleepDoc, err := client.GetSleep(sleepDocs.Items[0].ID)
+		singleSleepDoc, err := client.GetDailySleep(sleepDocs.Items[0].ID)
 		if err != nil {
 			fmt.Printf("Error getting single sleep item: %v", err)
 			return

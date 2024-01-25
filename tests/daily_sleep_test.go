@@ -68,7 +68,7 @@ func TestGetSleepDocument(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetSleep(tc.documentId)
+			activity, err := client.GetDailySleep(tc.documentId)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
@@ -156,7 +156,7 @@ func TestGetSleepDocuments(t *testing.T) {
 
 			client := go_oura.NewClientWithUrlAndHttp("", server.URL, server.Client())
 
-			activity, err := client.GetSleeps(tc.startTime, tc.endTime, nil)
+			activity, err := client.GetDailySleeps(tc.startTime, tc.endTime, nil)
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
