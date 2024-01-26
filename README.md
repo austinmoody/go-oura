@@ -1,8 +1,10 @@
-# go_oura
+# GoOura
 
-A way to pull the data for your Oura ring using Go.
+[![Go Report Card](https://goreportcard.com/badge/github.com/austinmoody/go_oura)](https://goreportcard.com/report/github.com/austinmoody/go_oura)
 
-Uses the v2 of the [Oura Ring API](https://cloud.ouraring.com/v2/docs).
+GoOura is a [Go](https://go.dev/) package which provides a way to pull data for your Oura Ring.
+
+GoOura is created for the v2 of the [Oura Ring API](https://cloud.ouraring.com/v2/docs).
 
 ## Features
 
@@ -41,7 +43,13 @@ To run the examples you'll need to have an environment variable called ```OURA_A
 
 ## Usage
 
-The first thing to do is to get a Client.  
+Import the package:
+
+```go
+import "github.com/austinmoody/go_oura"
+```
+
+Then create a Client:  
 
 ```go
 client := go_oura.NewClient("your-access-token")
@@ -59,4 +67,4 @@ if err != nil {
 }
 ```
 
-Unless there is an error you'll have an [Activities](activity.go) type.
+Unless there is an error you'll have an [Activities](daily_activity.go) type.
