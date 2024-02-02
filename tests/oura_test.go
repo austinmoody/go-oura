@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"errors"
 	"fmt"
 	"github.com/austinmoody/go_oura"
 	"io"
@@ -23,8 +22,8 @@ func TestNewClientWithUrl(t *testing.T) {
 	}{
 		{
 			name:      "ValidBaseUrl",
-			baseUrl:   "http://www.example.com/",
-			expected:  "http://www.example.com/",
+			baseUrl:   "https://www.example.com/",
+			expected:  "https://www.example.com/",
 			expectErr: false,
 		},
 		{
@@ -56,11 +55,6 @@ func TestNewClientWithUrl(t *testing.T) {
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
-				}
-
-				var ouraErr *go_oura.OuraError
-				if !errors.As(err, &ouraErr) {
-					t.Errorf("expected an OuraError but got a different error: %v", err)
 				}
 
 				return
@@ -119,13 +113,6 @@ func TestClient_NewRequest(t *testing.T) {
 				t.Errorf("did not expect an error but got: %v", err)
 			}
 
-			// If there is an error, it must be OuraError.
-			if err != nil {
-				var ouraErr *go_oura.OuraError
-				if !errors.As(err, &ouraErr) {
-					t.Errorf("expected an OuraError but got a different error: %v", err)
-				}
-			}
 		})
 	}
 }
@@ -172,7 +159,7 @@ func TestClient_Getter(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 
-			clientConfig := go_oura.GetConfigWithUrlAndHttp("accessToken", "http://www.example.com", mockHTTPClient)
+			clientConfig := go_oura.GetConfigWithUrlAndHttp("accessToken", "https://www.example.com", mockHTTPClient)
 
 			// Create new client with mock HTTP client
 			client := &go_oura.Client{Config: clientConfig}

@@ -16,8 +16,8 @@ import (
 // Sessions stores a list of session items along with a token which may be used to pull the next batch of Session items from the API.
 // JSON described at https://cloud.ouraring.com/v2/docs#operation/Multiple_session_Documents_v2_usercollection_session_get
 type Sessions struct {
-	Items      []Session `json:"data"`
-	Next_Token string    `json:"next_token"`
+	Items     []Session `json:"data"`
+	NextToken string    `json:"next_token"`
 }
 
 // Session stores specifics for a single session recorded by an Oura Ring
@@ -72,27 +72,23 @@ func (s *Sessions) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// GetSession calls the Oura Ring API with a specific session identifer and returns a Session object
-func (c *Client) GetSession(sessionId string) (Session, *OuraError) {
+// GetSession calls the Oura Ring API with a specific session identifier and returns a Session object
+func (c *Client) GetSession(sessionId string) (Session, error) {
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		fmt.Sprintf(SessionUrl+"/%s", sessionId),
 		nil,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return Session{},
-			ouraError
+			err
 	}
 
 	var session Session
-	err := json.Unmarshal(*apiResponse, &session)
+	err = json.Unmarshal(*apiResponse, &session)
 	if err != nil {
-		return Session{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Session{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return session, nil
@@ -101,7 +97,7 @@ func (c *Client) GetSession(sessionId string) (Session, *OuraError) {
 // GetSessions accepts a start & end date and returns a Sessions object which will contain any Session
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // sessions if the date range returns a large set.
-func (c *Client) GetSessions(startDate time.Time, endDate time.Time, nextToken *string) (Sessions, *OuraError) {
+func (c *Client) GetSessions(startDate time.Time, endDate time.Time, nextToken *string) (Sessions, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -112,24 +108,20 @@ func (c *Client) GetSessions(startDate time.Time, endDate time.Time, nextToken *
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		SessionUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return Sessions{},
-			ouraError
+			err
 	}
 
 	var sessions Sessions
-	err := json.Unmarshal(*apiResponse, &sessions)
+	err = json.Unmarshal(*apiResponse, &sessions)
 	if err != nil {
-		return Sessions{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Sessions{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return sessions, nil

@@ -75,7 +75,7 @@ func (w *Workouts) UnmarshalJSON(data []byte) error {
 // GetWorkouts accepts a start & end date and returns a Workouts object which will contain any Workout
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // workouts if the date range returns a large set.
-func (c *Client) GetWorkouts(startDate time.Time, endDate time.Time, nextToken *string) (Workouts, *OuraError) {
+func (c *Client) GetWorkouts(startDate time.Time, endDate time.Time, nextToken *string) (Workouts, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -86,50 +86,42 @@ func (c *Client) GetWorkouts(startDate time.Time, endDate time.Time, nextToken *
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		WorkoutUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return Workouts{},
-			ouraError
+			err
 	}
 
 	var workouts Workouts
-	err := json.Unmarshal(*apiResponse, &workouts)
+	err = json.Unmarshal(*apiResponse, &workouts)
 	if err != nil {
-		return Workouts{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Workouts{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return workouts, nil
 }
 
-// GetWorkout calls the Oura Ring API with a specific workout identifer and returns a Workout object
-func (c *Client) GetWorkout(workoutId string) (Workout, *OuraError) {
+// GetWorkout calls the Oura Ring API with a specific workout identifier and returns a Workout object
+func (c *Client) GetWorkout(workoutId string) (Workout, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(
+	apiResponse, err := c.Getter(fmt.Sprintf(
 		WorkoutUrl+"/%s",
 		workoutId,
 	), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return Workout{},
-			ouraError
+			err
 	}
 
 	var workout Workout
-	err := json.Unmarshal(*apiResponse, &workout)
+	err = json.Unmarshal(*apiResponse, &workout)
 	if err != nil {
-		return Workout{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Workout{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return workout, nil

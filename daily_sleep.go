@@ -79,7 +79,7 @@ func (sd *DailySleeps) UnmarshalJSON(data []byte) error {
 // GetDailySleeps accepts a start & end date and returns a DailySleeps object which will contain any DailySleep
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // activities if the date range returns a large set.
-func (c *Client) GetDailySleeps(startDate time.Time, endDate time.Time, nextToken *string) (DailySleeps, *OuraError) {
+func (c *Client) GetDailySleeps(startDate time.Time, endDate time.Time, nextToken *string) (DailySleeps, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -90,47 +90,39 @@ func (c *Client) GetDailySleeps(startDate time.Time, endDate time.Time, nextToke
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		DailySleepUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailySleeps{},
-			ouraError
+			err
 	}
 
 	var documents DailySleeps
-	err := json.Unmarshal(*apiResponse, &documents)
+	err = json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return DailySleeps{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailySleeps{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return documents, nil
 }
 
-// GetSleep accepts a single daily sleep ID and returns a DailySleep object.
-func (c *Client) GetDailySleep(dailySleepId string) (DailySleep, *OuraError) {
+// GetDailySleep accepts a single daily sleep ID and returns a DailySleep object.
+func (c *Client) GetDailySleep(dailySleepId string) (DailySleep, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(DailySleepUrl+"/%s", dailySleepId), nil)
+	apiResponse, err := c.Getter(fmt.Sprintf(DailySleepUrl+"/%s", dailySleepId), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailySleep{},
-			ouraError
+			err
 	}
 
 	var sleep DailySleep
-	err := json.Unmarshal(*apiResponse, &sleep)
+	err = json.Unmarshal(*apiResponse, &sleep)
 	if err != nil {
-		return DailySleep{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailySleep{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return sleep, nil

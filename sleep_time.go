@@ -75,7 +75,7 @@ func (st *SleepTimes) UnmarshalJSON(data []byte) error {
 // GetSleepTimes accepts a start & end date and returns a SleepTimes object which will contain any SleepTime
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // sleep times if the date range returns a large set.
-func (c *Client) GetSleepTimes(startDate time.Time, endDate time.Time, nextToken *string) (SleepTimes, *OuraError) {
+func (c *Client) GetSleepTimes(startDate time.Time, endDate time.Time, nextToken *string) (SleepTimes, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -86,50 +86,42 @@ func (c *Client) GetSleepTimes(startDate time.Time, endDate time.Time, nextToken
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		SleepTimeUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return SleepTimes{},
-			ouraError
+			err
 	}
 
 	var sleepTimes SleepTimes
-	err := json.Unmarshal(*apiResponse, &sleepTimes)
+	err = json.Unmarshal(*apiResponse, &sleepTimes)
 	if err != nil {
-		return SleepTimes{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return SleepTimes{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return sleepTimes, nil
 }
 
-// GetSleepTime calls the Oura Ring API with a specific sleep identifer and returns a SleepTime object
-func (c *Client) GetSleepTime(sleepTimeId string) (SleepTime, *OuraError) {
+// GetSleepTime calls the Oura Ring API with a specific sleep identifier and returns a SleepTime object
+func (c *Client) GetSleepTime(sleepTimeId string) (SleepTime, error) {
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		fmt.Sprintf(SleepTimeUrl+"/%s", sleepTimeId),
 		nil,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return SleepTime{},
-			ouraError
+			err
 	}
 
 	var sleepTime SleepTime
-	err := json.Unmarshal(*apiResponse, &sleepTime)
+	err = json.Unmarshal(*apiResponse, &sleepTime)
 	if err != nil {
-		return SleepTime{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return SleepTime{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return sleepTime, nil

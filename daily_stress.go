@@ -68,7 +68,7 @@ func (sd *DailyStresses) UnmarshalJSON(data []byte) error {
 // GetStresses accepts a start & end date and returns a DailyStresses object which will contain any DailyStress
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // stresses if the date range returns a large set.
-func (c *Client) GetStresses(startDate time.Time, endDate time.Time, nextToken *string) (DailyStresses, *OuraError) {
+func (c *Client) GetStresses(startDate time.Time, endDate time.Time, nextToken *string) (DailyStresses, error) {
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
 		"end_date":   []string{endDate.Format("2006-01-02")},
@@ -78,46 +78,38 @@ func (c *Client) GetStresses(startDate time.Time, endDate time.Time, nextToken *
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		StressUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailyStresses{},
-			ouraError
+			err
 	}
 
 	var documents DailyStresses
-	err := json.Unmarshal(*apiResponse, &documents)
+	err = json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return DailyStresses{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyStresses{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return documents, nil
 }
 
 // GetStress accepts a single Daily Stress ID and returns a DailyStress object.
-func (c *Client) GetStress(stressId string) (DailyStress, *OuraError) {
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(StressUrl+"/%s", stressId), nil)
+func (c *Client) GetStress(stressId string) (DailyStress, error) {
+	apiResponse, err := c.Getter(fmt.Sprintf(StressUrl+"/%s", stressId), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailyStress{},
-			ouraError
+			err
 	}
 
 	var stress DailyStress
-	err := json.Unmarshal(*apiResponse, &stress)
+	err = json.Unmarshal(*apiResponse, &stress)
 	if err != nil {
-		return DailyStress{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyStress{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return stress, nil

@@ -62,14 +62,10 @@ func GetConfigWithUrlAndHttp(accessToken string, baseUrl string, client HTTPClie
 	}
 }
 
-func (c *ClientConfig) GetUrl() (*url.URL, *OuraError) {
+func (c *ClientConfig) GetUrl() (*url.URL, error) {
 	apiUrl, err := url.ParseRequestURI(c.baseUrl)
 	if err != nil {
-		return nil,
-			&OuraError{
-				Code:    -1,
-				Message: fmt.Sprintf("failed to parse base url with error: %v", err),
-			}
+		return nil, fmt.Errorf("failed to parse base url with error: %w", err)
 	}
 
 	return apiUrl, nil

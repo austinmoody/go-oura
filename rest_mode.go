@@ -72,24 +72,20 @@ func (rm *RestModes) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// GetRestMode calls the Oura Ring API with a specific Rest Mode identifer and returns a RestMode object
-func (c *Client) GetRestMode(restModeId string) (RestMode, *OuraError) {
+// GetRestMode calls the Oura Ring API with a specific Rest Mode identifier and returns a RestMode object
+func (c *Client) GetRestMode(restModeId string) (RestMode, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(RestModeUrl+"/%s", restModeId), nil)
+	apiResponse, err := c.Getter(fmt.Sprintf(RestModeUrl+"/%s", restModeId), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return RestMode{},
-			ouraError
+			err
 	}
 
 	var restMode RestMode
-	err := json.Unmarshal(*apiResponse, &restMode)
+	err = json.Unmarshal(*apiResponse, &restMode)
 	if err != nil {
-		return RestMode{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return RestMode{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return restMode, nil
@@ -98,7 +94,7 @@ func (c *Client) GetRestMode(restModeId string) (RestMode, *OuraError) {
 // GetRestModes accepts a start & end date and returns a RestModes object which will contain any RestMode
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // rest modes if the date range returns a large set.
-func (c *Client) GetRestModes(startDate time.Time, endDate time.Time, nextToken *string) (RestModes, *OuraError) {
+func (c *Client) GetRestModes(startDate time.Time, endDate time.Time, nextToken *string) (RestModes, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -109,24 +105,20 @@ func (c *Client) GetRestModes(startDate time.Time, endDate time.Time, nextToken 
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		RestModeUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return RestModes{},
-			ouraError
+			err
 	}
 
 	var restModes RestModes
-	err := json.Unmarshal(*apiResponse, &restModes)
+	err = json.Unmarshal(*apiResponse, &restModes)
 	if err != nil {
-		return RestModes{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return RestModes{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return restModes, nil

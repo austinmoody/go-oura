@@ -70,7 +70,7 @@ func (t *EnhancedTags) UnmarshalJSON(data []byte) error {
 // GetEnhancedTags accepts a start & end date and returns a EnhancedTags object which will contain any EnhancedTag items
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // tags if the date range returns a large set.
-func (c *Client) GetEnhancedTags(startDate time.Time, endDate time.Time, nextToken *string) (EnhancedTags, *OuraError) {
+func (c *Client) GetEnhancedTags(startDate time.Time, endDate time.Time, nextToken *string) (EnhancedTags, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -81,47 +81,39 @@ func (c *Client) GetEnhancedTags(startDate time.Time, endDate time.Time, nextTok
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		TagUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return EnhancedTags{},
-			ouraError
+			err
 	}
 
 	var documents EnhancedTags
-	err := json.Unmarshal(*apiResponse, &documents)
+	err = json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return EnhancedTags{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return EnhancedTags{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return documents, nil
 }
 
 // GetEnhancedTag accepts a single Enhanced Tag ID and returns a EnhancedTag object.
-func (c *Client) GetEnhancedTag(documentId string) (EnhancedTag, *OuraError) {
+func (c *Client) GetEnhancedTag(documentId string) (EnhancedTag, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(TagUrl+"/%s", documentId), nil)
+	apiResponse, err := c.Getter(fmt.Sprintf(TagUrl+"/%s", documentId), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return EnhancedTag{},
-			ouraError
+			err
 	}
 
 	var tag EnhancedTag
-	err := json.Unmarshal(*apiResponse, &tag)
+	err = json.Unmarshal(*apiResponse, &tag)
 	if err != nil {
-		return EnhancedTag{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return EnhancedTag{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return tag, nil

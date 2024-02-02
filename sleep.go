@@ -98,7 +98,7 @@ func (s *Sleeps) UnmarshalJSON(data []byte) error {
 // GetSleeps accepts a start & end date and returns a Sleeps object which will contain any Sleep
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // sleep if the date range returns a large set.
-func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (Sleeps, *OuraError) {
+func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *string) (Sleeps, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -109,50 +109,42 @@ func (c *Client) GetSleeps(startDate time.Time, endDate time.Time, nextToken *st
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		SleepUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return Sleeps{},
-			ouraError
+			err
 	}
 
 	var documents Sleeps
-	err := json.Unmarshal(*apiResponse, &documents)
+	err = json.Unmarshal(*apiResponse, &documents)
 	if err != nil {
-		return Sleeps{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Sleeps{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return documents, nil
 }
 
 // GetSleep accepts a single sleep ID and returns a Sleep object.
-func (c *Client) GetSleep(sleepId string) (Sleep, *OuraError) {
+func (c *Client) GetSleep(sleepId string) (Sleep, error) {
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		fmt.Sprintf(SleepUrl+"/%s", sleepId),
 		nil,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return Sleep{},
-			ouraError
+			err
 	}
 
 	var sleep Sleep
-	err := json.Unmarshal(*apiResponse, &sleep)
+	err = json.Unmarshal(*apiResponse, &sleep)
 	if err != nil {
-		return Sleep{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return Sleep{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return sleep, nil
