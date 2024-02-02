@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"errors"
 	"github.com/austinmoody/go_oura"
 	"net/http"
 	"net/http/httptest"
@@ -72,11 +71,6 @@ func TestGetSleepDocument(t *testing.T) {
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
-				}
-
-				var ouraErr *go_oura.OuraError
-				if !errors.As(err, &ouraErr) {
-					t.Errorf("expected an OuraError but got a different error: %v", err)
 				}
 
 				return
@@ -160,11 +154,6 @@ func TestGetSleepDocuments(t *testing.T) {
 			if tc.expectErr {
 				if err == nil {
 					t.Errorf("Expected error, got nil")
-				}
-
-				var ouraErr *go_oura.OuraError
-				if !errors.As(err, &ouraErr) {
-					t.Errorf("expected an OuraError but got a different error: %v", err)
 				}
 
 				return

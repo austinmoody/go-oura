@@ -70,7 +70,7 @@ func (rc *RingConfigurations) UnmarshalJSON(data []byte) error {
 // GetRingConfigurations accepts a start & end date and returns a RingConfigurations object which will contain any RingConfiguration
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // ring configurations if the date range returns a large set.
-func (c *Client) GetRingConfigurations(startDate time.Time, endDate time.Time, nextToken *string) (RingConfigurations, *OuraError) {
+func (c *Client) GetRingConfigurations(startDate time.Time, endDate time.Time, nextToken *string) (RingConfigurations, error) {
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
 		"end_date":   []string{endDate.Format("2006-01-02")},
@@ -80,50 +80,42 @@ func (c *Client) GetRingConfigurations(startDate time.Time, endDate time.Time, n
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		RingConfigurationUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return RingConfigurations{},
-			ouraError
+			err
 	}
 
 	var ringConfigurations RingConfigurations
-	err := json.Unmarshal(*apiResponse, &ringConfigurations)
+	err = json.Unmarshal(*apiResponse, &ringConfigurations)
 	if err != nil {
-		return RingConfigurations{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return RingConfigurations{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return ringConfigurations, nil
 }
 
-// GetRingConfiguration calls the Oura Ring API with a specific Ring Configuration identifer and returns a RingConfiguration object
-func (c *Client) GetRingConfiguration(ringConfigurationId string) (RingConfiguration, *OuraError) {
+// GetRingConfiguration calls the Oura Ring API with a specific Ring Configuration identifier and returns a RingConfiguration object
+func (c *Client) GetRingConfiguration(ringConfigurationId string) (RingConfiguration, error) {
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		fmt.Sprintf(RingConfigurationUrl+"/%s", ringConfigurationId),
 		nil,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return RingConfiguration{},
-			ouraError
+			err
 	}
 
 	var ringConfiguration RingConfiguration
-	err := json.Unmarshal(*apiResponse, &ringConfiguration)
+	err = json.Unmarshal(*apiResponse, &ringConfiguration)
 	if err != nil {
-		return RingConfiguration{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return RingConfiguration{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return ringConfiguration, nil

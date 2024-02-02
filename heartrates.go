@@ -66,7 +66,7 @@ func (hr *HeartRates) UnmarshalJSON(data []byte) error {
 // GetHeartRates accepts a start & end date and returns a HeartRates object which will contain any HeartRate
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // heart rates if the date range returns a large set.
-func (c *Client) GetHeartRates(startDateTime time.Time, endDateTime time.Time, nextToken *string) (HeartRates, *OuraError) {
+func (c *Client) GetHeartRates(startDateTime time.Time, endDateTime time.Time, nextToken *string) (HeartRates, error) {
 
 	urlParameters := url.Values{
 		"start_datetime": []string{startDateTime.Format("2006-01-02T15:04:05-07:00")},
@@ -77,23 +77,19 @@ func (c *Client) GetHeartRates(startDateTime time.Time, endDateTime time.Time, n
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		HeartRateUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
-		return HeartRates{}, ouraError
+	if err != nil {
+		return HeartRates{}, err
 	}
 
 	var heartrates HeartRates
-	err := json.Unmarshal(*apiResponse, &heartrates)
+	err = json.Unmarshal(*apiResponse, &heartrates)
 	if err != nil {
-		return HeartRates{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return HeartRates{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return heartrates, nil

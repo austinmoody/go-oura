@@ -100,25 +100,21 @@ func (da *DailyActivity) UnmarshalJSON(data []byte) error {
 }
 
 // GetActivity accepts a single Daily Activity ID and returns a DailyActivity object.
-func (c *Client) GetActivity(dailyActivityId string) (DailyActivity, *OuraError) {
-	apiResponse, ouraError := c.Getter(
+func (c *Client) GetActivity(dailyActivityId string) (DailyActivity, error) {
+	apiResponse, err := c.Getter(
 		fmt.Sprintf(ActivityUrl+"/%s", dailyActivityId),
 		nil,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailyActivity{},
-			ouraError
+			err
 	}
 
 	var activity DailyActivity
-	err := json.Unmarshal(*apiResponse, &activity)
+	err = json.Unmarshal(*apiResponse, &activity)
 	if err != nil {
-		return DailyActivity{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyActivity{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return activity, nil
@@ -127,7 +123,7 @@ func (c *Client) GetActivity(dailyActivityId string) (DailyActivity, *OuraError)
 // GetActivities accepts a start & end date and returns a DailyActivities object which will contain any DailyActivity
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // activities if the date range returns a large set.
-func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (DailyActivities, *OuraError) {
+func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken *string) (DailyActivities, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -138,23 +134,19 @@ func (c *Client) GetActivities(startDate time.Time, endDate time.Time, nextToken
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		ActivityUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
-		return DailyActivities{}, ouraError
+	if err != nil {
+		return DailyActivities{}, err
 	}
 
 	var activities DailyActivities
-	err := json.Unmarshal(*apiResponse, &activities)
+	err = json.Unmarshal(*apiResponse, &activities)
 	if err != nil {
-		return DailyActivities{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyActivities{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return activities, nil

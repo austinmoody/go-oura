@@ -74,7 +74,7 @@ func (s *DailySpo2Readings) UnmarshalJSON(data []byte) error {
 // GetSpo2Readings accepts a start & end date and returns a DailySpo2Readings object which will contain any DailySpo2Reading
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // SpO2 readings if the date range returns a large set.
-func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time, nextToken *string) (DailySpo2Readings, *OuraError) {
+func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time, nextToken *string) (DailySpo2Readings, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -85,47 +85,39 @@ func (c *Client) GetSpo2Readings(startDate time.Time, endDate time.Time, nextTok
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		Spo2Url,
 		urlParameters,
 	)
 
-	if ouraError != nil {
-		return DailySpo2Readings{}, ouraError
+	if err != nil {
+		return DailySpo2Readings{}, err
 	}
 
 	var readings DailySpo2Readings
-	err := json.Unmarshal(*apiResponse, &readings)
+	err = json.Unmarshal(*apiResponse, &readings)
 	if err != nil {
-		return DailySpo2Readings{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailySpo2Readings{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return readings, nil
 }
 
 // GetSpo2Reading accepts a single SpO2 Reading ID and returns a DailySpo2Reading object.
-func (c *Client) GetSpo2Reading(spo2ReadingId string) (DailySpo2Reading, *OuraError) {
-	apiResponse, ouraError := c.Getter(
+func (c *Client) GetSpo2Reading(spo2ReadingId string) (DailySpo2Reading, error) {
+	apiResponse, err := c.Getter(
 		fmt.Sprintf("%s/%s", Spo2Url, spo2ReadingId),
 		nil,
 	)
 
-	if ouraError != nil {
-		return DailySpo2Reading{}, ouraError
+	if err != nil {
+		return DailySpo2Reading{}, err
 	}
 
 	var reading DailySpo2Reading
-	err := json.Unmarshal(*apiResponse, &reading)
+	err = json.Unmarshal(*apiResponse, &reading)
 	if err != nil {
-		return DailySpo2Reading{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailySpo2Reading{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return reading, nil

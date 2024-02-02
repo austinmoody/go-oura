@@ -42,23 +42,19 @@ func (pi *PersonalInfo) UnmarshalJSON(data []byte) error {
 }
 
 // GetPersonalInfo calls the Oura Ring API and returns a PersonalInfo object describing the user
-func (c *Client) GetPersonalInfo() (PersonalInfo, *OuraError) {
+func (c *Client) GetPersonalInfo() (PersonalInfo, error) {
 
-	apiResponse, ouraError := c.Getter(PersonalInfoUrl, nil)
+	apiResponse, err := c.Getter(PersonalInfoUrl, nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return PersonalInfo{},
-			ouraError
+			err
 	}
 
 	var personalInfo PersonalInfo
-	err := json.Unmarshal(*apiResponse, &personalInfo)
+	err = json.Unmarshal(*apiResponse, &personalInfo)
 	if err != nil {
-		return PersonalInfo{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return PersonalInfo{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return personalInfo, nil

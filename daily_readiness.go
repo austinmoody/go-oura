@@ -73,7 +73,7 @@ func (dr *DailyReadiness) UnmarshalJSON(data []byte) error {
 // GetReadinesses accepts a start & end date and returns a DailyReadinesses object which will contain any DailyReadiness
 // found in the time period.  Optionally the next token can be passed which tells the API to give the next set of
 // activities if the date range returns a large set.
-func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time, nextToken *string) (DailyReadinesses, *OuraError) {
+func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time, nextToken *string) (DailyReadinesses, error) {
 
 	urlParameters := url.Values{
 		"start_date": []string{startDate.Format("2006-01-02")},
@@ -84,47 +84,39 @@ func (c *Client) GetReadinesses(startDate time.Time, endDate time.Time, nextToke
 		urlParameters.Set("next_token", *nextToken)
 	}
 
-	apiResponse, ouraError := c.Getter(
+	apiResponse, err := c.Getter(
 		ReadinessUrl,
 		urlParameters,
 	)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailyReadinesses{},
-			ouraError
+			err
 	}
 
 	var readiness DailyReadinesses
-	err := json.Unmarshal(*apiResponse, &readiness)
+	err = json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
-		return DailyReadinesses{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyReadinesses{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return readiness, nil
 }
 
 // GetReadiness accepts a single Daily Readiness ID and returns a DailyReadiness object.
-func (c *Client) GetReadiness(dailyReadinessId string) (DailyReadiness, *OuraError) {
+func (c *Client) GetReadiness(dailyReadinessId string) (DailyReadiness, error) {
 
-	apiResponse, ouraError := c.Getter(fmt.Sprintf(ReadinessUrl+"/%s", dailyReadinessId), nil)
+	apiResponse, err := c.Getter(fmt.Sprintf(ReadinessUrl+"/%s", dailyReadinessId), nil)
 
-	if ouraError != nil {
+	if err != nil {
 		return DailyReadiness{},
-			ouraError
+			err
 	}
 
 	var readiness DailyReadiness
-	err := json.Unmarshal(*apiResponse, &readiness)
+	err = json.Unmarshal(*apiResponse, &readiness)
 	if err != nil {
-		return DailyReadiness{},
-			&OuraError{
-				Code:    0,
-				Message: fmt.Sprintf("failed to process response body with error: %v", err),
-			}
+		return DailyReadiness{}, fmt.Errorf("failed to process response body with error: %v", err)
 	}
 
 	return readiness, nil
